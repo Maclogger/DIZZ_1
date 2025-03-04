@@ -1,0 +1,48 @@
+<div class="card rounded-3 bg- col-4">
+    <h3>@Headline</h3>
+    <label for="seed_input">Seed</label>
+    <input id="seed_input" value="@_seed" step="1" min="0"/>
+
+    @ChildContent
+
+    <button @onclick="OnInitialize">Initialize Generator</button>
+    <button @onclick="OnGenerate">Generate</button>
+
+    <p>Generated value: @_value</p>
+</div>
+
+@using DIZZ_1.BackEnd.Generators
+@typeparam T
+
+@code {
+    [Parameter, EditorRequired] public string Headline { get; set; } = "";
+
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+
+    [Parameter, EditorRequired] public Func<Generator<T>, int, Generator<T>>? Initialize { get; set; }
+
+    [Parameter, EditorRequired] public Generator<T>? Generator { get; set; }
+
+    private string _value = "";
+    private int _seed = 0;
+
+    private void OnGenerate()
+    {
+        if (Generator == null)
+        {
+            throw new ArgumentException("Generator was not initialized yet!");
+        }
+        T value = Generator.Generate();
+        Console.WriteLine($"Value: {value?.ToString()}");
+        _value = value?.ToString() ?? "";
+    }
+
+    private void OnInitialize()
+    {
+        if (Generator == null || Initialize == null)
+        {
+            throw new ArgumentException("Generator was not initialized yet!");
+        }
+        Generator = Initialize(Generator, _seed);
+    }
+}

@@ -1,0 +1,78 @@
+@page "/generators"
+@using DIZZ_1.BackEnd
+@using DIZZ_1.BackEnd.Generators
+@using DIZZ_1.BackEnd.Generators.Discrete
+@using DIZZ_1.BackEnd.Generators.Real
+@using DIZZ_1.Components.Basic
+@rendermode InteractiveServer
+
+<h3>Generators</h3>
+
+<div class="container-fluid">
+    <div class="row">
+        <GeneratorCard Headline="Discrete Uniform"
+                       Initialize="InitializeUniformDiscreteGenerator"
+                       Generator="MainApp.Instance.Generators.UniformDiscreteGenerator">
+            <label for="discrete_min">Min</label>
+            <input id="discrete_min" @bind="MinUniDisc" step="1"/>
+
+            <label for="discrete_max">Max</label>
+            <input id="discrete_max" @bind="MaxUniDisc" step="1"/>
+        </GeneratorCard>
+
+        <GeneratorCard Headline="Real Uniform"
+                       Initialize="InitializeUniformRealGenerator"
+                       Generator="MainApp.Instance.Generators.UniformRealGenerator">
+            <label for="real_min">Min</label>
+            <input id="real_min" @bind="MinUniReal" step="0.1"/>
+
+            <label for="real_max">Max</label>
+            <input id="real_max" @bind="MaxUniReal" step="0.1"/>
+        </GeneratorCard>
+    </div>
+</div>
+
+<button @onclick="SpustiSa">
+    spusti
+</button>
+
+
+@code {
+    public int MinUniDisc = 0;
+    public int MaxUniDisc = 1;
+
+    public Generator<int> InitializeUniformDiscreteGenerator(Generator<int> generator, int seed)
+    {
+        MainApp.Instance.Generators.UniformDiscreteGenerator = new UniformDiscreteGenerator(seed, MinUniDisc, MaxUniDisc);
+        return MainApp.Instance.Generators.UniformDiscreteGenerator;
+    }
+
+
+    public double MinUniReal = 0.0;
+    public double MaxUniReal = 1.0;
+
+    private Generator<double> InitializeUniformRealGenerator(Generator<double> generator, int seed)
+    {
+        MainApp.Instance.Generators.UniformRealGenerator = new UniformRealGenerator(seed, MinUniReal, MaxUniReal);
+        return MainApp.Instance.Generators.UniformRealGenerator;
+    }
+
+    private void SpustiSa()
+    {
+        Console.WriteLine("ahoj");
+        int cislo = 0;
+        for (int i = 0; i < 1_000_000; i++)
+        {
+            for (int j = 0; j < 30; j++)
+            {
+                for (int k = 0; k < 7; k++)
+                {
+                    cislo++;
+                }
+            }
+        }
+
+        Console.WriteLine(cislo);
+    }
+
+}
