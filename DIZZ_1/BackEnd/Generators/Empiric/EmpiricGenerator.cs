@@ -27,7 +27,7 @@ public class EmpiricGenerator<T>: Generator<T>
         DistrChooserGenerator = new UniformRealGenerator(0.0, 1.0);
     }
 
-    public override T Generate()
+    protected override T GenerateValue()
     {
         Generator<T> chosenGenerator = ChooseGenerator();
         return chosenGenerator.Generate();

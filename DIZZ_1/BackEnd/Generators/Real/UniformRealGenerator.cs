@@ -21,9 +21,9 @@ public class UniformRealGenerator : Generator<double>
      * min ... INCLUSIVE
      * max ... EXCLUSIVE
      */
-    public override double Generate()
+    protected override double GenerateValue()
     {
-        Console.WriteLine($"Min: {Min}, Max: {Max}");
+        //Console.WriteLine($"Min: {Min}, Max: {Max}");
         return Random.NextDouble() * (Max - Min) + Min;
     }
 

@@ -38,17 +38,10 @@
                 @foreach (EmpiricDistrModel<double> row in _empiricRows)
                 {
                     <div class="row">
-                        @if (row.Generator is UniformRealGenerator uniformRealGenerator)
-                        {
-                            <EmpiricRow
-                                DistrModel="row"
-                                OnRemove="@(() => RemoveRow(row))"
-                            />
-                        }
-                        else
-                        {
-                            <div>Invalid generator type</div>
-                        }
+                        <EmpiricRow
+                            DistrModel="row"
+                            OnRemove="@(() => RemoveRow(row))"
+                        />
                     </div>
                 }
                 <div class="row">
@@ -57,6 +50,8 @@
             </div>
         </GeneratorCard>
     </div>
+
+
 </div>
 
 @code {

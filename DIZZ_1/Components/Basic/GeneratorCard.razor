@@ -5,9 +5,17 @@
     <button @onclick="OnInitialize">Initialize Generator</button>
     <button @onclick="OnGenerate">Generate</button>
 
-    <p>Generated value: @_value</p>
+    <label>Count</label>
+    <input @bind="CountToGenerate"/>
+
+    <label>Generated values:</label>
+    <textarea readonly>
+        @GetPrintValuesForTextArea()
+    </textarea>
+
 </div>
 
+@using DIZZ_1.BackEnd
 @using DIZZ_1.BackEnd.Generators
 @typeparam T
 
@@ -16,11 +24,11 @@
 
     [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter, EditorRequired] public Func<Generator<T>>? Initialize { get; set; }
+    [Parameter, EditorRequired] public required Func<Generator<T>> Initialize { get; set; }
 
-    [Parameter, EditorRequired] public Generator<T>? Generator { get; set; }
+    [Parameter, EditorRequired] public required Generator<T>? Generator { get; set; }
 
-    private string _value = "";
+    [Parameter] public int CountToGenerate { get; set; } = 1;
 
     private void OnGenerate()
     {
@@ -28,17 +36,30 @@
         {
             throw new ArgumentException("Generator was not initialized yet!");
         }
-        T value = Generator.Generate();
-        Console.WriteLine($"Value: {value?.ToString()}");
-        _value = value?.ToString() ?? "";
+
+        for (int i = 0; i < CountToGenerate; i++)
+        {
+            Generator.Generate();
+            /*
+            Console.WriteLine($"Value: {value?.ToString()}");
+            */
+        }
     }
 
     private void OnInitialize()
     {
-        if (Initialize == null)
-        {
-            throw new ArgumentException("Initialize method was NULL.");
-        }
         Generator = Initialize();
+    }
+
+    private string GetPrintValuesForTextArea()
+    {
+        List<T> data = Generator?.Data ?? [];
+        if (data.Count <= Config.MaxPrintValuesInTextArea)
+        {
+            return string.Join(", ", data);
+        }
+
+        IEnumerable<T> limitedValues = data.Take(Config.MaxPrintValuesInTextArea);
+        return string.Join(", ", limitedValues) + "...";
     }
 }

@@ -31,9 +31,11 @@ public class UniformDiscreteGenerator : Generator<int>
      * min ... INCLUSIVE
      * max ... EXCLUSIVE
      */
-    public override int Generate()
+    protected override int GenerateValue()
     {
+        /*
         Console.WriteLine($"UniformDiscreteGenerator: {Min}-{Max}");
+        */
         return Random.Next(Min, Max);
     }
 

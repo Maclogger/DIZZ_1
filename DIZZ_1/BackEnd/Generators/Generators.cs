@@ -6,8 +6,15 @@ namespace DIZZ_1.BackEnd.Generators;
 
 public class Generators
 {
+    // BASIC Testers
     public UniformDiscreteGenerator? UniformDiscreteGenerator { get; set; }
     public UniformRealGenerator? UniformRealGenerator { get; set; }
     public EmpiricGenerator<int>? EmpiricDiscreteGenerator { get; set; }
     public EmpiricGenerator<double>?  EmpiricRealGenerator { get; set; }
+
+    // Semester work
+    public void InitializeAll()
+    {
+
+    }
 }

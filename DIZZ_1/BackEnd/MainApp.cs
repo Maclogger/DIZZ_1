@@ -11,6 +11,9 @@ namespace DIZZ_1.BackEnd
         {
             Generators = new();
             MasterSeeder = new Random(0);
+            Generators.InitializeAll();
+
+
         }
 
         public Random MasterSeeder { get; set; }
