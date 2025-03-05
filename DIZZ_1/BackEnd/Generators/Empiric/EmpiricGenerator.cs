@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using DIZZ_1.BackEnd.Generators.Real;
+using DIZZ_1.BackEnd.Generators.Testers;
 
 namespace DIZZ_1.BackEnd.Generators.Empiric;
 
@@ -15,7 +16,7 @@ public class EmpiricDistrModel<T>
     }
 }
 
-public class EmpiricGenerator<T>: Generator<T>
+public class EmpiricGenerator<T> : Generator<T>
 {
     public List<EmpiricDistrModel<T>> DistrModels;
     public UniformRealGenerator DistrChooserGenerator { get; set; }
@@ -33,6 +34,17 @@ public class EmpiricGenerator<T>: Generator<T>
         return chosenGenerator.Generate();
     }
 
+    public override IGeneratorTester<T>? GetTester()
+    {
+        /*
+        if (this is EmpiricGenerator<int>)
+        {
+            return new EmpiricDiscreteTester() as IGeneratorTester<T>;
+        }
+        */
+        return new EmpiricRealTester() as IGeneratorTester<T>;
+    }
+
     private Generator<T> ChooseGenerator()
     {
         double generatedNumber = DistrChooserGenerator.Generate();
@@ -45,6 +57,7 @@ public class EmpiricGenerator<T>: Generator<T>
             {
                 return DistrModels[i].Generator;
             }
+
             sum += probability;
         }
 

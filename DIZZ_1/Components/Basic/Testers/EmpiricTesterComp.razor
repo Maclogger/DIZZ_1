@@ -1,0 +1,8 @@
+@using System.ComponentModel.DataAnnotations
+@using DIZZ_1.BackEnd.Generators.Empiric
+<h3>EmpiricTesterComp</h3>
+
+@typeparam T
+@code {
+    [Parameter, EditorRequired] public EmpiricGenerator<T>? EmpiricGenerator { get; set; }
+}

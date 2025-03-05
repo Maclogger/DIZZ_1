@@ -1,3 +1,5 @@
+using DIZZ_1.BackEnd.Generators.Testers;
+
 namespace DIZZ_1.BackEnd.Generators;
 
 public abstract class Generator<T>
@@ -20,4 +22,5 @@ public abstract class Generator<T>
         Data.Add(value);
         return value;
     }
+    public abstract IGeneratorTester<T>? GetTester();
 }

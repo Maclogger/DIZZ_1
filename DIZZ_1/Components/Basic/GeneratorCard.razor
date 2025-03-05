@@ -13,10 +13,20 @@
         @GetPrintValuesForTextArea()
     </textarea>
 
+    @if (Generator is EmpiricGenerator<T> empiricGenerator)
+    {
+        <EmpiricTesterComp T="T" EmpiricGenerator="empiricGenerator"/>
+    }
+    else
+    {
+        <GeneratorTesterComp T="T" Generator="Generator"/>
+    }
 </div>
 
 @using DIZZ_1.BackEnd
 @using DIZZ_1.BackEnd.Generators
+@using DIZZ_1.BackEnd.Generators.Empiric
+@using DIZZ_1.Components.Basic.Testers
 @typeparam T
 
 @code {
@@ -62,4 +72,5 @@
         IEnumerable<T> limitedValues = data.Take(Config.MaxPrintValuesInTextArea);
         return string.Join(", ", limitedValues) + "...";
     }
+
 }

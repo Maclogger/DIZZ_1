@@ -1,3 +1,5 @@
+using DIZZ_1.BackEnd.Generators.Testers;
+
 namespace DIZZ_1.BackEnd.Generators.Real;
 
 public class UniformRealGenerator : Generator<double>
@@ -25,6 +27,11 @@ public class UniformRealGenerator : Generator<double>
     {
         //Console.WriteLine($"Min: {Min}, Max: {Max}");
         return Random.NextDouble() * (Max - Min) + Min;
+    }
+
+    public override IGeneratorTester<double> GetTester()
+    {
+        return new UniformRealTester();
     }
 
     public override string ToString()

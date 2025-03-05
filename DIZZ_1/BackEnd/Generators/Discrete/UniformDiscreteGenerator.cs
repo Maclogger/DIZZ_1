@@ -1,3 +1,5 @@
+using DIZZ_1.BackEnd.Generators.Testers;
+
 namespace DIZZ_1.BackEnd.Generators.Discrete;
 
 public class UniformDiscreteGenerator : Generator<int>
@@ -37,6 +39,11 @@ public class UniformDiscreteGenerator : Generator<int>
         Console.WriteLine($"UniformDiscreteGenerator: {Min}-{Max}");
         */
         return Random.Next(Min, Max);
+    }
+
+    public override IGeneratorTester<int> GetTester()
+    {
+        return new UniformDiscreteTester();
     }
 
     public override string ToString()
