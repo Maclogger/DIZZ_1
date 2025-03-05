@@ -13,29 +13,46 @@
         <GeneratorCard Headline="Discrete Uniform"
                        Initialize="InitializeUniformDiscreteGenerator"
                        Generator="MainApp.Instance.Generators.UniformDiscreteGenerator">
-            <label for="discrete_min">Min</label>
-            <input id="discrete_min" @bind="MinUniDisc" step="1"/>
+            <label>Min</label>
+            <input @bind="MinUniDisc" step="1"/>
 
-            <label for="discrete_max">Max</label>
-            <input id="discrete_max" @bind="MaxUniDisc" step="1"/>
+            <label>Max</label>
+            <input @bind="MaxUniDisc" step="1"/>
         </GeneratorCard>
 
         <GeneratorCard Headline="Real Uniform"
                        Initialize="InitializeUniformRealGenerator"
                        Generator="MainApp.Instance.Generators.UniformRealGenerator">
-            <label for="real_min">Min</label>
-            <input id="real_min" @bind="MinUniReal" step="0.1"/>
+            <label>Min</label>
+            <input @bind="MinUniReal" step="0.1"/>
 
-            <label for="real_max">Max</label>
-            <input id="real_max" @bind="MaxUniReal" step="0.1"/>
+            <label>Max</label>
+            <input @bind="MaxUniReal" step="0.1"/>
+        </GeneratorCard>
+
+
+        <GeneratorCard Headline="Real Empiric"
+                       Initialize="InitializeUniformRealGenerator"
+                       Generator="MainApp.Instance.Generators.UniformRealGenerator">
+
+            <div class="container">
+                @foreach (var row in _empiricRows)
+                {
+                    <div class="row">
+                        <EmpiricRow Min="@row.Min"
+                                    Max="@row.Max"
+                                    Probability="@row.Probability"
+                                    OnRemove="@(() => RemoveRow(row))"/>
+                    </div>
+                }
+            </div>
+
+            <div class="row">
+                <button class="btn btn-primary mt-2" @onclick="AddRow">Add random distribution</button>
+            </div>
         </GeneratorCard>
     </div>
 </div>
-
-<button @onclick="SpustiSa">
-    spusti
-</button>
-
 
 @code {
     public int MinUniDisc = 0;
@@ -57,22 +74,23 @@
         return MainApp.Instance.Generators.UniformRealGenerator;
     }
 
-    private void SpustiSa()
-    {
-        Console.WriteLine("ahoj");
-        int cislo = 0;
-        for (int i = 0; i < 1_000_000; i++)
-        {
-            for (int j = 0; j < 30; j++)
-            {
-                for (int k = 0; k < 7; k++)
-                {
-                    cislo++;
-                }
-            }
-        }
+    private readonly List<EmpiricRowModel> _empiricRows = new();
 
-        Console.WriteLine(cislo);
+    private void AddRow()
+    {
+        _empiricRows.Add(new EmpiricRowModel { Min = 0, Max = 0, Probability = 0.0 });
+    }
+
+    private void RemoveRow(EmpiricRowModel row)
+    {
+        _empiricRows.Remove(row);
+    }
+
+    private class EmpiricRowModel
+    {
+        public int Min { get; set; }
+        public int Max { get; set; }
+        public double Probability { get; set; }
     }
 
 }
