@@ -1,11 +1,8 @@
 @using DIZZ_1.BackEnd.Generators
-<h3>GeneratorTesterComp</h3>
-
-
-<button @onclick="DoTest">Run Test</button>
+<button class="btn btn-primary mt-3" @onclick="DoTest">Run Test</button>
 @if (_testReport != null)
 {
-    <textarea>
+    <textarea rows="10" class="form-control mt-3">
         @_testReport
     </textarea>
 }
@@ -25,5 +22,4 @@
         string? testReport = Generator?.GetTester()?.DoTest(Generator);
         _testReport = testReport ?? "Test failed";
     }
-
 }

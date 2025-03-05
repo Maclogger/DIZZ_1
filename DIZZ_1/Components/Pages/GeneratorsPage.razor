@@ -7,151 +7,138 @@
 @using DIZZ_1.Components.Basic
 @rendermode InteractiveServer
 
-<h3>Tester</h3>
 
 <div class="container-fluid mb-5">
     <div class="row">
-        <GeneratorCard Headline="Discrete Uniform"
-                       Initialize="InitializeUniformDiscreteGenerator"
-                       Generator="MainApp.Instance.Generators.UniformDiscreteGenerator"
-                       >
-            <label>Min</label>
-            <input @bind="MinUniDisc" step="1"/>
-
-            <label>Max</label>
-            <input @bind="MaxUniDisc" step="1"/>
-        </GeneratorCard>
-
-        <GeneratorCard Headline="Real Uniform"
-                       Initialize="InitializeUniformRealGenerator"
-                       Generator="MainApp.Instance.Generators.UniformRealGenerator"
-                       >
-            <label>Min</label>
-            <input @bind="MinUniReal" step="0.1"/>
-
-            <label>Max</label>
-            <input @bind="MaxUniReal" step="0.1"/>
-        </GeneratorCard>
-
-        <GeneratorCard Headline="Real Empiric"
-                       Initialize="InitializeEmpiricRealGenerator"
-                       Generator="MainApp.Instance.Generators.UniformRealGenerator"
-                       >
-            <div class="container">
-                @foreach (EmpiricDistrModel<double> row in _empiricRealRows)
-                {
-                    <div class="row">
-                        <EmpiricRealRow
-                            DistrModel="row"
-                            OnRemove="@(() => RemoveRealRow(row))"
-                            />
-                    </div>
-                }
-                <div class="row">
-                    <button class="btn btn-primary mt-2" @onclick="AddRealRow">Add random distribution</button>
-                </div>
-            </div>
-        </GeneratorCard>
-
-
-        <GeneratorCard Headline="Discrete Empiric"
-                       Initialize="InitializeEmpiricDiscreteGenerator"
-                       Generator="MainApp.Instance.Generators.UniformDiscreteGenerator"
-                       >
-            <div class="container">
-                @foreach (EmpiricDistrModel<int> row in _empiricDiscreteRows)
-                {
-                    <div class="row">
-                        <EmpiricDiscreteRow
-                            DistrModel="row"
-                            OnRemove="@(() => RemoveDiscreteRow(row))"
-                        />
-                    </div>
-                }
-                <div class="row">
-                    <button class="btn btn-primary mt-2" @onclick="AddDiscreteRow">Add random distribution</button>
-                </div>
-            </div>
-        </GeneratorCard>
-
+        <h2 class="mx-1">Tester</h2>
     </div>
+    <div class="row">
+        <!-- Discrete Uniform Generator -->
+        <GeneratorCard Headline="Discrete Uniform"
+                       Initialize="@(() => InitializeUniformGenerator<int>(MinUniDisc, MaxUniDisc, true))"
+                       Generator="MainApp.Instance.Generators.UniformDiscreteGenerator">
+            <label>Min</label>
+            <input class="form-control" type="number" @bind="MinUniDisc" step="1"/>
 
+            <label>Max</label>
+            <input class="form-control" type="number" @bind="MaxUniDisc" step="1"/>
+        </GeneratorCard>
 
+        <!-- Real Uniform Generator -->
+        <GeneratorCard Headline="Real Uniform"
+                       Initialize="@(() => InitializeUniformGenerator<double>(MinUniReal, MaxUniReal, false))"
+                       Generator="MainApp.Instance.Generators.UniformRealGenerator">
+            <label>Min</label>
+            <input class="form-control" type="number" @bind="MinUniReal" step="0.1"/>
+
+            <label>Max</label>
+            <input class="form-control" type="number" @bind="MaxUniReal" step="0.1"/>
+        </GeneratorCard>
+
+        <!-- Real Empiric Generator -->
+        <GeneratorCard Headline="Real Empiric"
+                       Initialize="@(() => InitializeEmpiricGenerator(_empiricRealRows, false))"
+                       Generator="MainApp.Instance.Generators.EmpiricRealGenerator">
+            <div class="container">
+                @foreach (var row in _empiricRealRows)
+                {
+                    <EmpiricRealRow DistrModel="row" OnRemove="@(() => RemoveRow(row, _empiricRealRows))"/>
+                }
+                <div class="row">
+                    <button class="btn btn-primary mt-2" @onclick="() => AddRow(_empiricRealRows, false)">
+                        Add random distribution
+                    </button>
+                </div>
+            </div>
+        </GeneratorCard>
+
+        <!-- Discrete Empiric Generator -->
+        <GeneratorCard Headline="Discrete Empiric"
+                       Initialize="@(() => InitializeEmpiricGenerator(_empiricDiscreteRows, true))"
+                       Generator="MainApp.Instance.Generators.EmpiricDiscreteGenerator">
+            <div class="container">
+                @foreach (var row in _empiricDiscreteRows)
+                {
+                    <EmpiricDiscreteRow DistrModel="row" OnRemove="@(() => RemoveRow(row, _empiricDiscreteRows))"/>
+                }
+                <div class="row">
+                    <button class="btn btn-primary mt-2" @onclick="() => AddRow(_empiricDiscreteRows, true)">
+                        Add random distribution
+                    </button>
+                </div>
+            </div>
+        </GeneratorCard>
+    </div>
 </div>
 
 @code {
     public int MinUniDisc = 0;
-    public int MaxUniDisc = 1;
-
-    public Generator<int> InitializeUniformDiscreteGenerator()
-    {
-        MainApp.Instance.Generators.UniformDiscreteGenerator = new UniformDiscreteGenerator(MinUniDisc, MaxUniDisc);
-        return MainApp.Instance.Generators.UniformDiscreteGenerator;
-    }
-
+    public int MaxUniDisc = 100;
     public double MinUniReal = 0.0;
     public double MaxUniReal = 1.0;
-
-    private Generator<double> InitializeUniformRealGenerator()
-    {
-        MainApp.Instance.Generators.UniformRealGenerator = new UniformRealGenerator(MinUniReal, MaxUniReal);
-        return MainApp.Instance.Generators.UniformRealGenerator;
-    }
 
     private readonly List<EmpiricDistrModel<double>> _empiricRealRows = new();
     private readonly List<EmpiricDistrModel<int>> _empiricDiscreteRows = new();
 
-    private void AddRealRow()
+    private Generator<T> InitializeUniformGenerator<T>(T min, T max, bool isDiscrete)
     {
-        _empiricRealRows.Add(new EmpiricDistrModel<double>(new UniformRealGenerator(0.0, 100.0), 1.0));
+        if (isDiscrete)
+        {
+            UniformDiscreteGenerator generator = new UniformDiscreteGenerator(Convert.ToInt32(min), Convert.ToInt32(max));
+            MainApp.Instance.Generators.UniformDiscreteGenerator = generator;
+            return (generator as Generator<T>)!;
+        }
+        else
+        {
+            UniformRealGenerator generator = new UniformRealGenerator(Convert.ToDouble(min), Convert.ToDouble(max));
+            MainApp.Instance.Generators.UniformRealGenerator = generator;
+            return (generator as Generator<T>)!;
+        }
     }
 
-    private void RemoveRealRow(EmpiricDistrModel<double> row)
+    private Generator<T> InitializeEmpiricGenerator<T>(List<EmpiricDistrModel<T>> rows, bool isDiscrete)
     {
-        _empiricRealRows.Remove(row);
+        var generator = new EmpiricGenerator<T>(rows);
+
+        if (isDiscrete)
+        {
+            MainApp.Instance.Generators.EmpiricDiscreteGenerator = generator as EmpiricGenerator<int>;
+        }
+        else
+        {
+            MainApp.Instance.Generators.EmpiricRealGenerator = generator as EmpiricGenerator<double>;
+        }
+
+        return generator;
     }
 
-
-    private void AddDiscreteRow()
+    private void AddRow<T>(List<EmpiricDistrModel<T>> rows, bool isDiscrete)
     {
-        _empiricDiscreteRows.Add(new EmpiricDistrModel<int>(new UniformDiscreteGenerator(0, 100), 1.0));
+        if (isDiscrete)
+        {
+            int newMinimum = 0;
+            if (rows.Count >= 1)
+            {
+                newMinimum = (rows[^1].Generator! as UniformDiscreteGenerator)!.Max;
+            }
+
+            rows.Add(new EmpiricDistrModel<T>((new UniformDiscreteGenerator(newMinimum, newMinimum + 10) as Generator<T>)!, 0.5));
+        }
+        else
+        {
+            double newMinimum = 0;
+            if (rows.Count >= 1)
+            {
+                newMinimum = (rows[^1].Generator! as UniformRealGenerator)!.Max;
+            }
+
+            rows.Add(new EmpiricDistrModel<T>((new UniformRealGenerator(newMinimum, newMinimum + 1.0) as Generator<T>)!, 0.5));
+        }
     }
 
-    private void RemoveDiscreteRow(EmpiricDistrModel<int> row)
+    private void RemoveRow<T>(EmpiricDistrModel<T> row, List<EmpiricDistrModel<T>> rows)
     {
-        _empiricDiscreteRows.Remove(row);
+        rows.Remove(row);
     }
 
-    private Generator<double> InitializeEmpiricRealGenerator()
-    {
-        EmpiricGenerator<double> gen = new(_empiricRealRows);
-
-        EmpiricGenerator<double> generator = EmpiricGeneratorFactory.CreateRealGenerator(
-        [
-            (5.0, 10.0, 0.4),
-            (10.0, 50.0, 0.3),
-            (50.0, 70.0, 0.2),
-            (70.0, 80.0, 0.06),
-            (80.0, 95.0, 0.04)
-        ]);
-        MainApp.Instance.Generators.EmpiricRealGenerator = gen;
-        Console.WriteLine(gen);
-        return gen;
-    }
-
-    private Generator<int> InitializeEmpiricDiscreteGenerator()
-    {
-        EmpiricGenerator<int> gen = new(_empiricDiscreteRows);
-
-        EmpiricGenerator<int> generator = EmpiricGeneratorFactory.CreateDiscreteGenerator(
-        [
-            (30, 60, 0.2),
-            (60, 100, 0.4),
-            (100, 140, 0.3),
-            (140, 160, 0.1),
-        ]);
-        MainApp.Instance.Generators.EmpiricDiscreteGenerator = gen;
-        Console.WriteLine(gen);
-        return gen;
-    }
 }
