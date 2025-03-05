@@ -17,10 +17,10 @@
         <GeneratorCard Headline="Discrete Uniform"
                        Initialize="@(() => InitializeUniformGenerator<int>(MinUniDisc, MaxUniDisc, true))"
                        Generator="MainApp.Instance.Generators.UniformDiscreteGenerator">
-            <label>Min</label>
+            <label class="mt-3">Min:</label>
             <input class="form-control" type="number" @bind="MinUniDisc" step="1"/>
 
-            <label>Max</label>
+            <label class="mt-3">Max:</label>
             <input class="form-control" type="number" @bind="MaxUniDisc" step="1"/>
         </GeneratorCard>
 
@@ -28,10 +28,10 @@
         <GeneratorCard Headline="Real Uniform"
                        Initialize="@(() => InitializeUniformGenerator<double>(MinUniReal, MaxUniReal, false))"
                        Generator="MainApp.Instance.Generators.UniformRealGenerator">
-            <label>Min</label>
+            <label class="mt-3">Min:</label>
             <input class="form-control" type="number" @bind="MinUniReal" step="0.1"/>
 
-            <label>Max</label>
+            <label class="mt-3">Max:</label>
             <input class="form-control" type="number" @bind="MaxUniReal" step="0.1"/>
         </GeneratorCard>
 

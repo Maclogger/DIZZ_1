@@ -1,25 +1,29 @@
 @page "/Needle"
 @using DIZZ_1.BackEnd.Needle
 @rendermode InteractiveServer
-<div class="d-flex flex-column">
+<div class="d-flex flex-column card bg-dark-subtle p-3 w-25">
     <h3>Buffon's Needle</h3>
 
-    <label>Replication Count</label>
-    <input @bind="_replicationCount" min="2" step="10"/>
+    <label class="mt-3">Replication Count</label>
+    <input class="form-control" @bind="_replicationCount" min="2" step="10"/>
 
-    <label>Circle Diameter</label>
-    <input @bind="_diameter" min="0" step="0.1"/>
+    <label class="mt-3">Circle Diameter</label>
+    <input class="form-control" type="number" @bind="_diameter" min="0" step="0.1"/>
 
-    <label>Needle Length</label>
-    <input @bind="_needleLength" min="0" step="0.1"/>
+    <label class="mt-3">Needle Length</label>
+    <input class="form-control" type="number" @bind="_needleLength" min="0" step="0.1"/>
 
-    <button class="btn btn-primary" @onclick="Run">Run</button>
+    <button class="btn btn-primary mt-3" @onclick="Run">Run</button>
 </div>
+
 
 @if (_pi != null)
 {
-    <h4>Pi approximation: @_pi</h4>
+    <div class="card bg-dark-subtle p-3 mt-4 w-25">
+        <h5 class="p-0 m-0">Pi approximation: @_pi</h5>
+    </div>
 }
+
 
 @code {
     private double? _pi = null;
