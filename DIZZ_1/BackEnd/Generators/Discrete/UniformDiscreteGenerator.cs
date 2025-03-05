@@ -10,11 +10,10 @@ public class UniformDiscreteGenerator : Generator<int>
      * min ... INCLUSIVE
      * max ... EXCLUSIVE
      */
-    public UniformDiscreteGenerator(int seed, int min, int max) : base(seed)
+    public UniformDiscreteGenerator(int min, int max)
     {
         Min = min;
         Max = max;
-        Console.WriteLine($"UniformDiscreteGenerator: {seed}-{min}-{max}");
     }
 
     /**
@@ -34,7 +33,12 @@ public class UniformDiscreteGenerator : Generator<int>
      */
     public override int Generate()
     {
-        Console.WriteLine($"Generujem: {Min}-{Max}");
+        Console.WriteLine($"UniformDiscreteGenerator: {Min}-{Max}");
         return Random.Next(Min, Max);
+    }
+
+    public override string ToString()
+    {
+        return $"UniformDiscreteGenerator: Min: {Min}, Max: {Max}";
     }
 }

@@ -1,8 +1,5 @@
 <div class="card rounded-3 bg- col-4">
     <h3>@Headline</h3>
-    <label for="seed_input">Seed</label>
-    <input id="seed_input" value="@_seed" step="1" min="0"/>
-
     @ChildContent
 
     <button @onclick="OnInitialize">Initialize Generator</button>
@@ -19,12 +16,11 @@
 
     [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
 
-    [Parameter, EditorRequired] public Func<Generator<T>, int, Generator<T>>? Initialize { get; set; }
+    [Parameter, EditorRequired] public Func<Generator<T>>? Initialize { get; set; }
 
     [Parameter, EditorRequired] public Generator<T>? Generator { get; set; }
 
     private string _value = "";
-    private int _seed = 0;
 
     private void OnGenerate()
     {
@@ -39,10 +35,10 @@
 
     private void OnInitialize()
     {
-        if (Generator == null || Initialize == null)
+        if (Initialize == null)
         {
-            throw new ArgumentException("Generator was not initialized yet!");
+            throw new ArgumentException("Initialize method was NULL.");
         }
-        Generator = Initialize(Generator, _seed);
+        Generator = Initialize();
     }
 }

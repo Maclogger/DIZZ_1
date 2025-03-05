@@ -2,6 +2,7 @@
 @using DIZZ_1.BackEnd
 @using DIZZ_1.BackEnd.Generators
 @using DIZZ_1.BackEnd.Generators.Discrete
+@using DIZZ_1.BackEnd.Generators.Empiric
 @using DIZZ_1.BackEnd.Generators.Real
 @using DIZZ_1.Components.Basic
 @rendermode InteractiveServer
@@ -30,25 +31,29 @@
             <input @bind="MaxUniReal" step="0.1"/>
         </GeneratorCard>
 
-
         <GeneratorCard Headline="Real Empiric"
-                       Initialize="InitializeUniformRealGenerator"
+                       Initialize="InitializeEmpiricRealGenerator"
                        Generator="MainApp.Instance.Generators.UniformRealGenerator">
-
             <div class="container">
-                @foreach (var row in _empiricRows)
+                @foreach (EmpiricDistrModel<double> row in _empiricRows)
                 {
                     <div class="row">
-                        <EmpiricRow Min="@row.Min"
-                                    Max="@row.Max"
-                                    Probability="@row.Probability"
-                                    OnRemove="@(() => RemoveRow(row))"/>
+                        @if (row.Generator is UniformRealGenerator uniformRealGenerator)
+                        {
+                            <EmpiricRow
+                                DistrModel="row"
+                                OnRemove="@(() => RemoveRow(row))"
+                            />
+                        }
+                        else
+                        {
+                            <div>Invalid generator type</div>
+                        }
                     </div>
                 }
-            </div>
-
-            <div class="row">
-                <button class="btn btn-primary mt-2" @onclick="AddRow">Add random distribution</button>
+                <div class="row">
+                    <button class="btn btn-primary mt-2" @onclick="AddRow">Add random distribution</button>
+                </div>
             </div>
         </GeneratorCard>
     </div>
@@ -58,39 +63,47 @@
     public int MinUniDisc = 0;
     public int MaxUniDisc = 1;
 
-    public Generator<int> InitializeUniformDiscreteGenerator(Generator<int> generator, int seed)
+    public Generator<int> InitializeUniformDiscreteGenerator()
     {
-        MainApp.Instance.Generators.UniformDiscreteGenerator = new UniformDiscreteGenerator(seed, MinUniDisc, MaxUniDisc);
+        MainApp.Instance.Generators.UniformDiscreteGenerator = new UniformDiscreteGenerator(MinUniDisc, MaxUniDisc);
         return MainApp.Instance.Generators.UniformDiscreteGenerator;
     }
-
 
     public double MinUniReal = 0.0;
     public double MaxUniReal = 1.0;
 
-    private Generator<double> InitializeUniformRealGenerator(Generator<double> generator, int seed)
+    private Generator<double> InitializeUniformRealGenerator()
     {
-        MainApp.Instance.Generators.UniformRealGenerator = new UniformRealGenerator(seed, MinUniReal, MaxUniReal);
+        MainApp.Instance.Generators.UniformRealGenerator = new UniformRealGenerator(MinUniReal, MaxUniReal);
         return MainApp.Instance.Generators.UniformRealGenerator;
     }
 
-    private readonly List<EmpiricRowModel> _empiricRows = new();
+    private readonly List<EmpiricDistrModel<double>> _empiricRows = new();
 
     private void AddRow()
     {
-        _empiricRows.Add(new EmpiricRowModel { Min = 0, Max = 0, Probability = 0.0 });
+        _empiricRows.Add(new EmpiricDistrModel<double>(new UniformRealGenerator(0.0, 100.0), 1.0));
     }
 
-    private void RemoveRow(EmpiricRowModel row)
+    private void RemoveRow(EmpiricDistrModel<double> row)
     {
         _empiricRows.Remove(row);
     }
 
-    private class EmpiricRowModel
+    private Generator<double> InitializeEmpiricRealGenerator()
     {
-        public int Min { get; set; }
-        public int Max { get; set; }
-        public double Probability { get; set; }
-    }
+        EmpiricGenerator<double> gen = new(_empiricRows);
 
+        EmpiricGenerator<double> generator = EmpiricGeneratorFactory.CreateRealGenerator(
+        [
+            (5.0, 10.0, 0.4),
+            (10.0, 50.0, 0.3),
+            (50.0, 70.0, 0.2),
+            (70.0, 80.0, 0.06),
+            (80.0, 95.0, 0.04)
+        ]);
+        MainApp.Instance.Generators.EmpiricRealGenerator = gen;
+        Console.WriteLine(gen);
+        return gen;
+    }
 }

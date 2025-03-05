@@ -10,11 +10,10 @@ public class UniformRealGenerator : Generator<double>
      * min ... INCLUSIVE
      * max ... EXCLUSIVE
      */
-    public UniformRealGenerator(int seed, double min, double max) : base(seed)
+    public UniformRealGenerator(double min, double max)
     {
         Max = max;
         Min = min;
-        Console.WriteLine($"UniformRealGenerator: {seed}-{min}-{max}");
     }
 
     /**
@@ -26,5 +25,10 @@ public class UniformRealGenerator : Generator<double>
     {
         Console.WriteLine($"Min: {Min}, Max: {Max}");
         return Random.NextDouble() * (Max - Min) + Min;
+    }
+
+    public override string ToString()
+    {
+        return $"UniformRealGenerator: Min: {Min}, Max: {Max}";
     }
 }
