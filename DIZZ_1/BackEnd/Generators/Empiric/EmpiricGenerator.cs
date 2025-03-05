@@ -36,12 +36,10 @@ public class EmpiricGenerator<T> : Generator<T>
 
     public override IGeneratorTester<T>? GetTester()
     {
-        /*
         if (this is EmpiricGenerator<int>)
         {
             return new EmpiricDiscreteTester() as IGeneratorTester<T>;
         }
-        */
         return new EmpiricRealTester() as IGeneratorTester<T>;
     }
 

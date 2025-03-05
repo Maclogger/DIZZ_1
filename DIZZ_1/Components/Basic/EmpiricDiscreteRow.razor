@@ -1,0 +1,33 @@
+@using DIZZ_1.BackEnd.Generators.Empiric
+@using DIZZ_1.BackEnd.Generators.Discrete
+<div class="d-flex align-items-center mb-2">
+    <div class="col-3">
+        <label>Min:</label>
+        <input @bind="((UniformDiscreteGenerator)DistrModel!.Generator).Min" type="number" step="1" class="form-control mx-2"/>
+    </div>
+
+    <div class="col-3">
+        <label>Max:</label>
+        <input @bind="((UniformDiscreteGenerator)DistrModel!.Generator).Max" type="number" step="1" class="form-control mx-2"/>
+    </div>
+
+    <div class="col-3">
+        <label>Probability:</label>
+        <input @bind="DistrModel.Probability" type="number" min="0" max="1.0" step="0.01" class="form-control mx-2"/>
+    </div>
+
+    <div class="col-3">
+        <button class="btn btn-danger" @onclick="RemoveRow">Remove</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EmpiricDistrModel<int>? DistrModel { get; set; }
+
+    [Parameter] public EventCallback OnRemove { get; set; }
+
+    private void RemoveRow()
+    {
+        OnRemove.InvokeAsync();
+    }
+}

@@ -9,11 +9,12 @@
 
 <h3>Generators</h3>
 
-<div class="container-fluid">
+<div class="container-fluid mb-5">
     <div class="row">
         <GeneratorCard Headline="Discrete Uniform"
                        Initialize="InitializeUniformDiscreteGenerator"
-                       Generator="MainApp.Instance.Generators.UniformDiscreteGenerator">
+                       Generator="MainApp.Instance.Generators.UniformDiscreteGenerator"
+                       >
             <label>Min</label>
             <input @bind="MinUniDisc" step="1"/>
 
@@ -23,7 +24,8 @@
 
         <GeneratorCard Headline="Real Uniform"
                        Initialize="InitializeUniformRealGenerator"
-                       Generator="MainApp.Instance.Generators.UniformRealGenerator">
+                       Generator="MainApp.Instance.Generators.UniformRealGenerator"
+                       >
             <label>Min</label>
             <input @bind="MinUniReal" step="0.1"/>
 
@@ -33,22 +35,45 @@
 
         <GeneratorCard Headline="Real Empiric"
                        Initialize="InitializeEmpiricRealGenerator"
-                       Generator="MainApp.Instance.Generators.UniformRealGenerator">
+                       Generator="MainApp.Instance.Generators.UniformRealGenerator"
+                       >
             <div class="container">
-                @foreach (EmpiricDistrModel<double> row in _empiricRows)
+                @foreach (EmpiricDistrModel<double> row in _empiricRealRows)
                 {
                     <div class="row">
-                        <EmpiricRow
+                        <EmpiricRealRow
                             DistrModel="row"
-                            OnRemove="@(() => RemoveRow(row))"
+                            OnRemove="@(() => RemoveRealRow(row))"
+                            />
+                    </div>
+                }
+                <div class="row">
+                    <button class="btn btn-primary mt-2" @onclick="AddRealRow">Add random distribution</button>
+                </div>
+            </div>
+        </GeneratorCard>
+
+
+        <GeneratorCard Headline="Discrete Empiric"
+                       Initialize="InitializeEmpiricDiscreteGenerator"
+                       Generator="MainApp.Instance.Generators.UniformDiscreteGenerator"
+                       >
+            <div class="container">
+                @foreach (EmpiricDistrModel<int> row in _empiricDiscreteRows)
+                {
+                    <div class="row">
+                        <EmpiricDiscreteRow
+                            DistrModel="row"
+                            OnRemove="@(() => RemoveDiscreteRow(row))"
                         />
                     </div>
                 }
                 <div class="row">
-                    <button class="btn btn-primary mt-2" @onclick="AddRow">Add random distribution</button>
+                    <button class="btn btn-primary mt-2" @onclick="AddDiscreteRow">Add random distribution</button>
                 </div>
             </div>
         </GeneratorCard>
+
     </div>
 
 
@@ -73,21 +98,33 @@
         return MainApp.Instance.Generators.UniformRealGenerator;
     }
 
-    private readonly List<EmpiricDistrModel<double>> _empiricRows = new();
+    private readonly List<EmpiricDistrModel<double>> _empiricRealRows = new();
+    private readonly List<EmpiricDistrModel<int>> _empiricDiscreteRows = new();
 
-    private void AddRow()
+    private void AddRealRow()
     {
-        _empiricRows.Add(new EmpiricDistrModel<double>(new UniformRealGenerator(0.0, 100.0), 1.0));
+        _empiricRealRows.Add(new EmpiricDistrModel<double>(new UniformRealGenerator(0.0, 100.0), 1.0));
     }
 
-    private void RemoveRow(EmpiricDistrModel<double> row)
+    private void RemoveRealRow(EmpiricDistrModel<double> row)
     {
-        _empiricRows.Remove(row);
+        _empiricRealRows.Remove(row);
+    }
+
+
+    private void AddDiscreteRow()
+    {
+        _empiricDiscreteRows.Add(new EmpiricDistrModel<int>(new UniformDiscreteGenerator(0, 100), 1.0));
+    }
+
+    private void RemoveDiscreteRow(EmpiricDistrModel<int> row)
+    {
+        _empiricDiscreteRows.Remove(row);
     }
 
     private Generator<double> InitializeEmpiricRealGenerator()
     {
-        EmpiricGenerator<double> gen = new(_empiricRows);
+        EmpiricGenerator<double> gen = new(_empiricRealRows);
 
         EmpiricGenerator<double> generator = EmpiricGeneratorFactory.CreateRealGenerator(
         [
@@ -98,6 +135,22 @@
             (80.0, 95.0, 0.04)
         ]);
         MainApp.Instance.Generators.EmpiricRealGenerator = gen;
+        Console.WriteLine(gen);
+        return gen;
+    }
+
+    private Generator<int> InitializeEmpiricDiscreteGenerator()
+    {
+        EmpiricGenerator<int> gen = new(_empiricDiscreteRows);
+
+        EmpiricGenerator<int> generator = EmpiricGeneratorFactory.CreateDiscreteGenerator(
+        [
+            (30, 60, 0.2),
+            (60, 100, 0.4),
+            (100, 140, 0.3),
+            (140, 160, 0.1),
+        ]);
+        MainApp.Instance.Generators.EmpiricDiscreteGenerator = gen;
         Console.WriteLine(gen);
         return gen;
     }

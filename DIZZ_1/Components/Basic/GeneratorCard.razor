@@ -1,4 +1,4 @@
-<div class="card rounded-3 bg- col-4">
+<div class="card rounded-3 bg- col-4 m-3">
     <h3>@Headline</h3>
     @ChildContent
 
@@ -13,20 +13,11 @@
         @GetPrintValuesForTextArea()
     </textarea>
 
-    @if (Generator is EmpiricGenerator<T> empiricGenerator)
-    {
-        <EmpiricTesterComp T="T" EmpiricGenerator="empiricGenerator"/>
-    }
-    else
-    {
-        <GeneratorTesterComp T="T" Generator="Generator"/>
-    }
+    <GeneratorTesterComp T="T" Generator="Generator"/>
 </div>
 
 @using DIZZ_1.BackEnd
 @using DIZZ_1.BackEnd.Generators
-@using DIZZ_1.BackEnd.Generators.Empiric
-@using DIZZ_1.Components.Basic.Testers
 @typeparam T
 
 @code {

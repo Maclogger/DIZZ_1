@@ -88,18 +88,14 @@ public class EmpiricRealTester : IGeneratorTester<double>
         {
             foreach ((double Min, double Max) range in groupCounts.Keys)
             {
-                if (IsValueInRange(value, range))
+                bool isValueInRange = value >= range.Min && value < range.Max;
+                if (isValueInRange)
                 {
                     groupCounts[range]++;
                     break;
                 }
             }
         }
-    }
-
-    private static bool IsValueInRange(double value, (double Min, double Max) range)
-    {
-        return value >= range.Min && value < range.Max;
     }
 
     private static Dictionary<(double Min, double Max), double> ConvertCountsToPercentages(
@@ -113,14 +109,9 @@ public class EmpiricRealTester : IGeneratorTester<double>
 
         foreach (KeyValuePair<(double Min, double Max), int> group in groupCounts)
         {
-            groupPercentages[group.Key] = CalculatePercentage(group.Value, totalDataPoints);
+            groupPercentages[group.Key] = (double)group.Value / totalDataPoints;
         }
 
         return groupPercentages;
-    }
-
-    private static double CalculatePercentage(int count, int total)
-    {
-        return (double)count / total;
     }
 }
