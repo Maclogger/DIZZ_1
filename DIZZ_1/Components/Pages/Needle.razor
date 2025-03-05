@@ -1,0 +1,33 @@
+@page "/Needle"
+@using DIZZ_1.BackEnd.Needle
+@rendermode InteractiveServer
+<h3>Buffon's Needle</h3>
+
+<label>Replication Count</label>
+<input @bind="_replicationCount" min="2" step="10"/>
+
+<label>Circle Diameter</label>
+<input @bind="_diameter" min="0" step="0.1"/>
+
+<label>Needle Length</label>
+<input @bind="_needleLength" min="0" step="0.1"/>
+
+<button class="btn btn-primary" @onclick="Run">Run</button>
+
+@if (_pi != null)
+{
+    <h4>Pi approximation: @_pi</h4>
+}
+
+@code {
+    private double? _pi = null;
+    private int _replicationCount = 1000;
+    private double _needleLength = 5;
+    private double _diameter = 10;
+
+    public void Run()
+    {
+        BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength);
+        _pi = needle.DoExperiment(_replicationCount);
+    }
+}
