@@ -2,10 +2,11 @@ namespace DIZZ_1.BackEnd.Simulation;
 
 public abstract class SimCore
 {
-    protected int CurrentReplication { get; private set; } = 0;
+    public int CurrentRun { get; set; } = 0;
 
     public double Run(int replicationCount)
     {
+        CurrentRun = 0;
         BeforeSimulation();
         double cumulative = 0;
         for (int i = 0; i < replicationCount; i++)
@@ -14,6 +15,7 @@ public abstract class SimCore
             double experimentResult = RunExperiment();
             AfterSimulationRun(cumulative);
             cumulative += experimentResult;
+            CurrentRun++;
         }
 
         AfterSimulation(cumulative);

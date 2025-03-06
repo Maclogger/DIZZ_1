@@ -18,6 +18,15 @@
 </div>
 
 
+<DynamicChart @ref="_piChart"
+              Title="Pi Approximation"
+              XAxisLabel="Replication"
+              YAxisLabel="Pi"
+              YAxisMin="0"
+              YAxisMax="6"
+              DatasetHeadline="Pi"/>
+
+
 @if (_pi != null)
 {
     <div class="card bg-dark-subtle p-3 mt-4 w-25">
@@ -28,13 +37,22 @@
 
 @code {
     private double? _pi = null;
-    private int _replicationCount = 1000;
+    private int _replicationCount = 10;
     private double _needleLength = 5;
     private double _diameter = 10;
+    private DynamicChart _piChart = default!;
 
     public void Run()
     {
-        BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength);
+        BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength, UpdatePi);
         _pi = needle.DoExperiment(_replicationCount);
     }
+
+    public async void UpdatePi(double newPi, int currentRun)
+    {
+        Console.WriteLine($"{newPi} - {currentRun}");
+        _pi = newPi;
+        await _piChart.AddValue(newPi);
+    }
+
 }

@@ -1,5 +1,6 @@
 using DIZZ_1.BackEnd.Generators.Real;
 using DIZZ_1.BackEnd.Simulation;
+using DIZZ_1.Components.Charts;
 
 namespace DIZZ_1.BackEnd.Needle;
 
@@ -11,8 +12,9 @@ public class BuffonNeedle : SimCore
     private readonly double _d;
     private readonly double _l;
 
-    public BuffonNeedle(double pD, double pL)
+    public BuffonNeedle(double pD, double pL, Action<double, int>? onApproximationUpdated = null)
     {
+        OnApproximationUpdated = onApproximationUpdated;
         _d = pD;
         _l = pL;
         _randomAlfa = new UniformRealGenerator(0.0, 180.0);
@@ -37,8 +39,12 @@ public class BuffonNeedle : SimCore
     {
         if (cumulative > 0)
         {
-            int currentRun = CurrentReplication;
+            Console.WriteLine($"Cumulative: {cumulative}");
+            Console.WriteLine($"_l: {_l}, _d: {_d}");
+            int currentRun = CurrentRun;
+            Console.WriteLine($"Current run: {currentRun}");
             double currentPi = _l / (_d * (cumulative / currentRun));
+            Console.WriteLine($"Buffon: {currentPi} - {currentRun}");
             OnApproximationUpdated?.Invoke(currentPi, currentRun);
         }
     }

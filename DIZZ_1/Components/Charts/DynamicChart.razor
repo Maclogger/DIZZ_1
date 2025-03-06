@@ -1,0 +1,136 @@
+@* DynamicChart.razor *@
+<div class="container-fluid overflow-x-auto">
+  <LineChart @ref="lineChart" Width="800" />
+</div>
+
+@code {
+    // Parametre komponentu pre prispôsobenie grafu
+    [Parameter] public string Title { get; set; } =
+        "Graf aproximácie \\(\\pi\\)";
+    [Parameter] public string XAxisLabel { get; set; } = "Iterácia";
+    [Parameter] public string YAxisLabel { get; set; } = "Hodnota \\(\\pi\\)";
+    [Parameter] public double YAxisMin { get; set; } = 0;
+    [Parameter] public double YAxisMax { get; set; } = 4;
+    [Parameter] public string DatasetHeadline { get; set; } = "\\(\\pi\\)";
+
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+
+    // Interný index iterácie, ktorý sa použije aj na generovanie labelov
+    private int iterationIndex;
+
+    // Uchovávanie všetkých labelov – môže obsahovať aj veľké množstvo dát
+    private List<string> labels = new();
+
+    // Pre uchovávanie kumulatívnej sumy (ak používate Leibnizov algoritmus)
+    private double _cumulativeSum = 0;
+
+    protected override void OnInitialized()
+    {
+        labels = new List<string>();
+        lineChartOptions = GetLineChartOptions();
+        chartData = new ChartData
+        {
+            Labels = labels,
+            Datasets = GetDefaultDataset()
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+        }
+    }
+
+    /// <summary>
+    /// Verejná metóda pre dynamické pridanie novej hodnoty do grafu.
+    /// Túto metódu môžete volať z iného kódu, keď získate novú hodnotu.
+    /// </summary>
+    /// <param name="value">Hodnota, ktorú chcete pridať.</param>
+    public async Task AddValue(double value)
+    {
+        iterationIndex++;
+        string newLabel = iterationIndex.ToString();
+        chartData.Labels.Add(newLabel);
+
+        chartData = await lineChart.AddDataAsync(
+            chartData,
+            newLabel,
+            new LineChartDatasetData(DatasetHeadline, value)
+        );
+    }
+
+    // Pomocná metóda na vytvorenie jediného datasetu
+    private List<IChartDataset> GetDefaultDataset()
+    {
+        return new List<IChartDataset>
+        {
+            new LineChartDataset
+            {
+                Label = DatasetHeadline,
+                Data = new List<double?>(),
+                BackgroundColor = "rgb(88, 80, 141)",
+                BorderColor = "rgb(88, 80, 141)",
+                BorderWidth = 2,
+                HoverBorderWidth = 4,
+            }
+        };
+    }
+
+    // Konfigurácia grafických možností spolu s decimation.
+    private LineChartOptions GetLineChartOptions()
+    {
+        var options = new LineChartOptions();
+        options.Interaction.Mode = InteractionMode.Index;
+
+        options.Plugins.Title = new ChartPluginsTitle
+        {
+            Text = Title,
+            Display = true,
+            Font = new ChartFont { Size = 20 }
+        };
+
+        options.Responsive = true;
+
+        options.Scales.X = new()
+        {
+            Title = new ChartAxesTitle { Text = XAxisLabel, Display = true }
+        };
+
+        options.Scales.Y = new()
+        {
+            Title = new ChartAxesTitle { Text = YAxisLabel, Display = true },
+            Min = YAxisMin,
+            SuggestedMax = YAxisMax
+        };
+
+        // Konfigurácia decimation, ktorá zabezpečí, že ak je dát veľmi veľa,
+        // bude sa vykresľovať len vybraná podmnožina (napr. 1000 bodov).
+        options.Decimation = new ChartDecimation
+        {
+            Enabled = true,
+            Algorithm = "lttb", // môže byť tiež "min-max"
+            Samples = 1000
+        };
+
+        return options;
+    }
+
+    /// <summary>
+    /// (Nepovinná) Ukážková metóda pre výpočet ďalšej aproximácie \\(\\pi\\)
+    /// pomocou Leibnizovho radu.
+    /// Algoritmus:
+    ///   \\( \\pi = 4 \\sum_{k=0}^{\\infty} \\frac{(-1)^k}{2k+1} \\)
+    /// Túto metódu môžete volať v rodičovskom komponente, ak chcete ako príklad.
+    /// </summary>
+    public double GetNextPiApproximation()
+    {
+        int k = iterationIndex;
+        double term = Math.Pow(-1, k) / (2 * k + 1);
+        _cumulativeSum += term;
+        return 4 * _cumulativeSum;
+    }
+}
