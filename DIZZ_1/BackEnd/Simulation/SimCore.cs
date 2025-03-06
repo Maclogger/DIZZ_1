@@ -10,18 +10,18 @@ public abstract class SimCore
         {
             BeforeSimulationRun();
             double experimentResult = RunExperiment();
-            AfterSimulationRun(cumulative);
+            AfterSimulationRun(cumulative / (i + 1));
             cumulative += experimentResult;
         }
 
-        AfterSimulation(cumulative);
+        AfterSimulation(cumulative / replicationCount);
         return cumulative / replicationCount;
     }
 
     public abstract void BeforeSimulation();
     public abstract void BeforeSimulationRun();
-    public abstract void AfterSimulation(double cumulative);
-    public abstract void AfterSimulationRun(double cumulative);
+    public abstract void AfterSimulation(double solution);
+    public abstract void AfterSimulationRun(double solution);
 
     public abstract double RunExperiment();
 }

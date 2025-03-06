@@ -1,0 +1,55 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime JsRuntime
+
+<div class="overflow-hidden" style="width: 800px; height: 500px">
+    <h3>@Title</h3>
+    <canvas id="@CanvasId" width="800" height="400"></canvas>
+</div>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "Line Chart";
+
+    [Parameter]
+    public string XAxisLabel { get; set; } = "X Axis";
+
+    [Parameter]
+    public string YAxisLabel { get; set; } = "Y Axis";
+
+    private string CanvasId = $"chart-{Guid.NewGuid()}";
+
+    private IJSObjectReference? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Načítame JavaScript modul
+            _module = await JsRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./js/realTimeChart.js");
+
+            await _module.InvokeVoidAsync("initializeChart", CanvasId,
+                new ChartConfiguration
+                {
+                    Title = Title,
+                    XAxisLabel = XAxisLabel,
+                    YAxisLabel = YAxisLabel
+                });
+        }
+    }
+
+    public async Task AddValue(double value)
+    {
+        if (_module is not null)
+        {
+            await _module.InvokeVoidAsync("addDataPoint", CanvasId, value);
+        }
+    }
+
+    public class ChartConfiguration
+    {
+        public string Title { get; set; } = "";
+        public string XAxisLabel { get; set; } = "";
+        public string YAxisLabel { get; set; } = "";
+    }
+}

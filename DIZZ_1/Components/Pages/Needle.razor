@@ -1,5 +1,6 @@
 @page "/Needle"
 @using DIZZ_1.BackEnd.Needle
+@using DIZZ_1.Components.Chart
 @rendermode InteractiveServer
 <div class="d-flex flex-column card bg-dark-subtle p-3 w-25">
     <h3>Buffon's Needle</h3>
@@ -24,16 +25,27 @@
     </div>
 }
 
+<RealTimeChart @ref="_chart" Title="Teploty" XAxisLabel="Čas" YAxisLabel="Teplota (°C)" />
 
 @code {
     private double? _pi = null;
-    private int _replicationCount = 1000;
+    private int _replicationCount = 10;
     private double _needleLength = 5;
     private double _diameter = 10;
+    private RealTimeChart? _chart;
 
     public void Run()
     {
-        BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength);
+        BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength, AddRandomPoint);
         _pi = needle.DoExperiment(_replicationCount);
+    }
+
+    private async Task AddRandomPoint(double newPi)
+    {
+        Console.WriteLine("AddRandomPoint");
+        if (_chart is not null)
+        {
+            await _chart.AddValue(newPi);
+        }
     }
 }

@@ -5,13 +5,15 @@ namespace DIZZ_1.BackEnd.Needle;
 
 public class BuffonNeedle : SimCore
 {
+    public Func<double, Task> UpdatePi { get; }
     private readonly UniformRealGenerator _randomY;
     private readonly UniformRealGenerator _randomAlfa;
     private readonly double _d;
     private readonly double _l;
 
-    public BuffonNeedle(double pD, double pL)
+    public BuffonNeedle(double pD, double pL, Func<double, Task> updatePi)
     {
+        UpdatePi = updatePi;
         _d = pD;
         _l = pL;
         _randomAlfa = new UniformRealGenerator(0.0, 180.0);
@@ -27,12 +29,16 @@ public class BuffonNeedle : SimCore
     {
     }
 
-    public override void AfterSimulation(double cumulative)
+    public override void AfterSimulation(double solution)
     {
+        Console.WriteLine("AfterSimulation");
     }
 
-    public override void AfterSimulationRun(double cumulative)
+    public override void AfterSimulationRun(double solution)
     {
+        Console.WriteLine("AfterSimulationRun");
+        double newPi =CalculatePi(solution);
+        UpdatePi.Invoke(newPi);
     }
 
     public override double RunExperiment()
@@ -50,13 +56,12 @@ public class BuffonNeedle : SimCore
     public double DoExperiment(int replicationCount)
     {
         double solution = Run(replicationCount);
+        return CalculatePi(solution);
+    }
 
-        double piAproxima = _l / (_d * solution);
-
-        return piAproxima;
-        /*
-            Console.WriteLine($"Vysledok experimentu: {solution}");
-            Console.WriteLine($"Pi aproxima: {piAproxima}");
-        */
+    private double CalculatePi(double solution)
+    {
+        double piApproximate = _l / (_d * solution);
+        return piApproximate;
     }
 }
