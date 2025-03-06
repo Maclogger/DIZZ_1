@@ -5,6 +5,7 @@ namespace DIZZ_1.BackEnd.Needle;
 
 public class BuffonNeedle : SimCore
 {
+    public event Action<double, int>? OnApproximationUpdated;
     private readonly UniformRealGenerator _randomY;
     private readonly UniformRealGenerator _randomAlfa;
     private readonly double _d;
@@ -29,10 +30,17 @@ public class BuffonNeedle : SimCore
 
     public override void AfterSimulation(double cumulative)
     {
+
     }
 
     public override void AfterSimulationRun(double cumulative)
     {
+        if (cumulative > 0)
+        {
+            int currentRun = CurrentReplication;
+            double currentPi = _l / (_d * (cumulative / currentRun));
+            OnApproximationUpdated?.Invoke(currentPi, currentRun);
+        }
     }
 
     public override double RunExperiment()

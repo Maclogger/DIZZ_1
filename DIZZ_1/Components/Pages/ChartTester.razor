@@ -1,0 +1,107 @@
+@page "/ChartTester"
+<h3>ChartTester</h3>
+<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="_lineChart" Width="800"/>
+</div>
+
+<div class="mt-5">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="UpdateIndiaNextOverRunsAsync"> India Next Over</Button>
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="UpdateEnglandNextOverRunsAsync"> England Next Over</Button>
+</div>
+
+@code {
+    private LineChart _lineChart = default!;
+    private LineChartOptions _lineChartOptions = default!;
+    private ChartData _chartData = default!;
+    private List<string> _labels = default!;
+
+    private List<double> _indiaRunsArray = new() { 9, 20, 29, 33, 50, 66, 75, 86, 91, 105, 120, 126, 141, 150, 156, 164, 177, 180, 184, 195 };
+    private List<double> _englandRunsArray = new() { 1, 1, 8, 19, 24, 26, 39, 47, 56, 66, 75, 88, 95, 100, 109, 114, 124, 129, 140, 142 };
+
+    private int _indiaCurrentOver;
+    private int _englandCurrentOver;
+
+    protected override void OnInitialized()
+    {
+        _labels = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" };
+        _lineChartOptions = GetLineChartOptions();
+        _chartData = new ChartData { Labels = _labels, Datasets = GetDefaultDatasets() };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await _lineChart.InitializeAsync(_chartData, _lineChartOptions);
+    }
+
+    private async Task UpdateIndiaNextOverRunsAsync()
+    {
+        if (_indiaCurrentOver > 0 && _indiaCurrentOver > _indiaRunsArray.Count - 1)
+            return;
+
+        _chartData = await _lineChart.AddDataAsync(_chartData, $"{_indiaCurrentOver + 1}", new LineChartDatasetData("India", _indiaRunsArray[_indiaCurrentOver]));
+        _indiaCurrentOver++;
+    }
+
+    private async Task UpdateEnglandNextOverRunsAsync()
+    {
+        if (_englandCurrentOver > 0 && _englandCurrentOver > _englandRunsArray.Count - 1)
+            return;
+
+        _chartData = await _lineChart.AddDataAsync(_chartData, $"{_englandCurrentOver + 1}", new LineChartDatasetData("England", _englandRunsArray[_englandCurrentOver]));
+        _englandCurrentOver++;
+    }
+
+    private List<IChartDataset> GetDefaultDatasets()
+    {
+        var datasets = new List<IChartDataset>
+        {
+            new LineChartDataset
+            {
+                Label = "India",
+                Data = new List<double?>(),
+                BackgroundColor = "rgb(88, 80, 141)",
+                BorderColor = "rgb(88, 80, 141)",
+                BorderWidth = 2,
+                HoverBorderWidth = 4,
+                // PointBackgroundColor = "rgb(88, 80, 141)",
+                // PointBorderColor = "rgb(88, 80, 141)",
+                // PointRadius = 0, // hide points
+                // PointHoverRadius = 4,
+            },
+            new LineChartDataset
+            {
+                Label = "England",
+                Data = new List<double?>(),
+                BackgroundColor = "rgb(255, 166, 0)",
+                BorderColor = "rgb(255, 166, 0)",
+                BorderWidth = 2,
+                HoverBorderWidth = 4,
+                // PointBackgroundColor = "rgb(255, 166, 0)",
+                // PointBorderColor = "rgb(255, 166, 0)",
+                // PointRadius = 0, // hide points
+                // PointHoverRadius = 4,
+            }
+        };
+
+        return datasets;
+    }
+
+    private LineChartOptions GetLineChartOptions()
+    {
+        var options = new LineChartOptions();
+
+        options.Interaction.Mode = InteractionMode.Index;
+
+        options.Plugins.Title = new ChartPluginsTitle { Text = "WORM", Display = true, Font = new ChartFont { Size = 20 } };
+
+        options.Responsive = true;
+
+        options.Scales.X!.Title = new ChartAxesTitle { Text = "Overs", Display = true };
+        options.Scales.Y!.Title = new ChartAxesTitle { Text = "Runs", Display = true };
+        options.Scales.Y.SuggestedMax = 140;
+
+        return options;
+    }
+
+}

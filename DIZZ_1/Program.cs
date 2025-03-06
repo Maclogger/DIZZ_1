@@ -2,6 +2,9 @@ using DIZZ_1.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Charts
+builder.Services.AddBlazorBootstrap();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

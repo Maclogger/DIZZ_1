@@ -2,6 +2,8 @@ namespace DIZZ_1.BackEnd.Simulation;
 
 public abstract class SimCore
 {
+    protected int CurrentReplication { get; private set; } = 0;
+
     public double Run(int replicationCount)
     {
         BeforeSimulation();
