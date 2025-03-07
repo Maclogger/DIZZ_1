@@ -1,3 +1,6 @@
+using DIZZ_1.BackEnd.Simulation;
+using DIZZ_1.BackEnd.Strategies;
+
 namespace DIZZ_1.BackEnd
 {
     public sealed class MainApp
@@ -12,11 +15,12 @@ namespace DIZZ_1.BackEnd
             Generators = new();
             MasterSeeder = new Random(0);
             Generators.InitializeAll();
-
-
+            StrategiesHandler = new();
         }
 
         public Random MasterSeeder { get; set; }
         public Generators.Generators Generators { get; private set; }
+
+        public StrategiesHandler StrategiesHandler { get; set; }
     }
 }

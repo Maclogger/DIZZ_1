@@ -1,0 +1,23 @@
+@page "/Simulation"
+@using DIZZ_1.BackEnd
+@using DIZZ_1.BackEnd.Strategies
+@rendermode InteractiveServer
+
+<h3>Simulation</h3>
+
+@if (MainApp.Instance.StrategiesHandler.HasStrategies())
+{
+    <div class=""></div>
+    foreach (Strategy strategy in MainApp.Instance.StrategiesHandler.Strategies)
+    {
+        <button class="btn btn-primary m-2">@strategy.Name</button>
+    }
+}
+else
+{
+    <p>No strategies were found.</p>
+}
+
+@code {
+
+}

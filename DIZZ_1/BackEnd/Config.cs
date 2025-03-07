@@ -10,4 +10,6 @@ public static class Config
         if (NthPointToDraw.HasValue) return NthPointToDraw.Value;
         return replicationCount / 1_000;
     }
+
+    public const string StrategiesDirectory = "Strategies";
 }
