@@ -1,11 +1,17 @@
-using System;
+using System.Threading.Tasks;
+using DIZZ_1.Components.Chart;
 
 namespace DIZZ_1.BackEnd.Simulation
 {
-    public abstract class SimCore
+    public abstract class SimCoreWithChart : SimCore
     {
-        public  double Run(int replicationCount)
+        public abstract RealTimeChart RealTimeChart { get; }
+        public abstract double ToChartValue(double solution);
+
+        public new async Task<double> Run(int replicationCount)
         {
+            int nthPointToDraw = Config.GetNthPointToDraw(replicationCount);
+
             BeforeSimulation();
             double cumulative = 0;
             for (int i = 0; i < replicationCount; i++)
@@ -14,15 +20,14 @@ namespace DIZZ_1.BackEnd.Simulation
                 double experimentResult = RunExperiment();
                 cumulative += experimentResult;
                 AfterSimulationRun(cumulative / (i + 1), i + 1);
+
+                if (i % nthPointToDraw == 0)
+                {
+                    await RealTimeChart.AddValue(ToChartValue(experimentResult));
+                }
             }
             AfterSimulation(cumulative / replicationCount);
             return cumulative / replicationCount;
         }
-
-        public abstract void BeforeSimulation();
-        public abstract void BeforeSimulationRun(int currentRun);
-        public abstract void AfterSimulation(double solution);
-        public abstract void AfterSimulationRun(double solution, int currentRun);
-        public abstract double RunExperiment();
     }
 }
