@@ -1,5 +1,7 @@
 @page "/Simulation"
+@using System.Diagnostics
 @using DIZZ_1.BackEnd
+@using DIZZ_1.BackEnd.Simulation
 @using DIZZ_1.BackEnd.Strategies
 @rendermode InteractiveServer
 
@@ -10,7 +12,9 @@
     <div class=""></div>
     foreach (Strategy strategy in MainApp.Instance.StrategiesHandler.Strategies)
     {
-        <button class="btn btn-primary m-2">@strategy.Name</button>
+        <button class="btn btn-primary m-2" @onclick="@(() => RunSimulation(strategy))">
+            @strategy.Name
+        </button>
     }
 }
 else
@@ -19,5 +23,14 @@ else
 }
 
 @code {
-
+    private void RunSimulation(Strategy strategy)
+    {
+        Main mainSimulation = new Main(strategy);
+        Console.WriteLine("Started");
+        Stopwatch watch = Stopwatch.StartNew();
+        double solution = mainSimulation.Run(100_000);
+        Console.WriteLine($"Finished");
+        Console.WriteLine(watch.Elapsed);
+        Console.WriteLine(solution);
+    }
 }

@@ -1,3 +1,4 @@
+/*
 using System.Threading.Tasks;
 using DIZZ_1.Components.Chart;
 
@@ -16,10 +17,10 @@ namespace DIZZ_1.BackEnd.Simulation
             double cumulative = 0;
             for (int i = 0; i < replicationCount; i++)
             {
-                BeforeSimulationRun(i + 1);
+                BeforeReplication(i + 1);
                 double experimentResult = RunExperiment();
                 cumulative += experimentResult;
-                AfterSimulationRun(cumulative / (i + 1), i + 1);
+                AfterReplication(cumulative / (i + 1), i + 1);
 
                 if (i % nthPointToDraw == 0)
                 {
@@ -31,3 +32,4 @@ namespace DIZZ_1.BackEnd.Simulation
         }
     }
 }
+*/

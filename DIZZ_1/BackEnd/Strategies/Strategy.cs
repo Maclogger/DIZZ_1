@@ -17,6 +17,16 @@ public class Strategy
         Console.WriteLine(fileName);
         string[] lines = File.ReadAllLines(Path.Combine(Config.StrategiesDirectory, fileName));
 
+        // dummy
+        Weeks.Add(new Week
+        {
+            WeekNumber = 0,
+            Supplier = 0,
+            Absorbers = 0,
+            BrakePads = 0,
+            Lights = 0,
+        });
+
         foreach (string line in lines.Skip(1))
         {
             if (string.IsNullOrWhiteSpace(line))
@@ -31,6 +41,7 @@ public class Strategy
                 Console.WriteLine("Invalid file format");
                 continue;
             }
+
             try
             {
                 Week week = new Week
@@ -48,7 +59,6 @@ public class Strategy
             {
                 Console.WriteLine(ex.Message);
             }
-
         }
     }
 }

@@ -6,7 +6,7 @@ using DIZZ_1.Components.Chart;
 
 namespace DIZZ_1.BackEnd.Needle
 {
-    public class BuffonNeedle : SimCoreWithChart
+    public class BuffonNeedle : SimCore
     {
         public Func<double, Task> UpdatePi { get; }
         private readonly UniformRealGenerator _randomY;
@@ -25,29 +25,29 @@ namespace DIZZ_1.BackEnd.Needle
             RealTimeChart = chart;
         }
 
-        public override void BeforeSimulation()
+        protected override void BeforeSimulation()
         {
             // Môžete tu pridať inicializačný kód pred simuláciou.
         }
 
-        public override void BeforeSimulationRun(int currentRun)
+        protected override void BeforeReplication()
         {
             // Môžete tu pridať kód spustený pred každým experimentom.
         }
 
-        public override void AfterSimulation(double solution)
+        protected override void AfterSimulation(double solution)
         {
             Console.WriteLine("AfterSimulation");
         }
 
-        public override void AfterSimulationRun(double solution, int currentRun)
+        protected override void AfterReplication(double solution)
         {
             Console.WriteLine("AfterSimulationRun");
             double newPi = CalculatePi(solution);
             UpdatePi.Invoke(newPi);
         }
 
-        public override double RunExperiment()
+        protected override double RunExperiment()
         {
             double alfaDegrees = _randomAlfa.Generate();
             double alfaRadians = alfaDegrees * (Math.PI / 180.0);
@@ -58,9 +58,9 @@ namespace DIZZ_1.BackEnd.Needle
             return y + a >= _d ? 1.0 : 0.0;
         }
 
-        public async Task<double> DoExperiment(int replicationCount)
+        public double DoExperiment(int replicationCount)
         {
-            double solution = await Run(replicationCount);
+            double solution = Run(replicationCount);
             return CalculatePi(solution);
         }
 
@@ -70,8 +70,8 @@ namespace DIZZ_1.BackEnd.Needle
             return _l / (_d * solution);
         }
 
-        public override RealTimeChart RealTimeChart { get; }
-        public override double ToChartValue(double solution)
+        public RealTimeChart RealTimeChart { get; }
+        public double ToChartValue(double solution)
         {
             return CalculatePi(solution);
         }

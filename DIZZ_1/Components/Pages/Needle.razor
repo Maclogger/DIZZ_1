@@ -34,10 +34,10 @@
     private double _diameter = 10;
     private RealTimeChart? _chart;
 
-    public async Task Run()
+    public void Run()
     {
         BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength, AddRandomPoint, _chart);
-        _pi = await needle.DoExperiment(_replicationCount);
+        _pi = needle.DoExperiment(_replicationCount);
     }
 
     private async Task AddRandomPoint(double newPi)
