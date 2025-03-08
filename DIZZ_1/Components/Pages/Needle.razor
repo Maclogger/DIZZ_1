@@ -2,10 +2,9 @@
 @using DIZZ_1.BackEnd.Needle
 @using DIZZ_1.Components.Chart
 @rendermode InteractiveServer
-<div class="d-flex flex-column card bg-dark-subtle p-3 w-25">
-    <h3>Buffon's Needle</h3>
-
-    <label class="mt-3">Replication Count</label>
+<h1>Buffon's Needle</h1>
+<div class="d-flex flex-column card bg-dark p-4 mb-3 text-white" style="width: 25rem;">
+    <label class="">Replication Count</label>
     <input class="form-control" @bind="_replicationCount" min="2" step="10"/>
 
     <label class="mt-3">Circle Diameter</label>
@@ -14,7 +13,7 @@
     <label class="mt-3">Needle Length</label>
     <input class="form-control" type="number" @bind="_needleLength" min="0" step="0.1"/>
 
-    <button class="btn btn-primary mt-3" @onclick="Run">Run</button>
+    <button class="btn btn-primary mt-3 mb-1" @onclick="Run">Run</button>
 </div>
 
 
@@ -25,7 +24,7 @@
     </div>
 }
 
-<RealTimeChart @ref="_chart" Title="Teploty" XAxisLabel="Čas" YAxisLabel="Teplota (°C)" />
+<RealTimeChart @ref="_chart" Title="Teploty" XAxisLabel="Čas" YAxisLabel="Teplota (°C)"/>
 
 @code {
     private double? _pi = null;
@@ -48,4 +47,5 @@
             await _chart.AddValue(newPi);
         }
     }
+
 }

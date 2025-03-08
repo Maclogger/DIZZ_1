@@ -6,6 +6,7 @@ public static class Config
 
     private static readonly int? NthPointToDraw = 1000;
     public const string FloatFormat = "F2";
+    public const double Tolerance = 0.00001;
 
     public static int GetNthPointToDraw(int replicationCount)
     {
@@ -14,7 +15,6 @@ public static class Config
     }
 
     public const bool PrintCompleteReplication = false;
-
     public const string StrategiesDirectory = "Strategies";
     public const double AbsorbersDailyStorageCostPerUnit = 0.2; // eur
     public const double BrakePadsDailyStorageCostPerUnit = 0.3; // eur

@@ -1,16 +1,16 @@
 @using DIZZ_1.BackEnd.Generators
-<button class="btn btn-primary mt-3" @onclick="DoTest">Run Test</button>
-@if (_testReport != null)
-{
-    <textarea rows="10" class="form-control mt-3">
-        @_testReport
-    </textarea>
-}
+<button class="btn btn-primary mt-3" @onclick="DoTest" disabled="@(Generator is null)">Run Test</button>
+
+<label class="mt-3">Test Results:</label>
+<textarea rows="10" class="form-control mb-1">
+    @_testReport
+</textarea>
 
 @typeparam T
+
 @code {
     [Parameter, EditorRequired] public required Generator<T>? Generator { get; set; }
-    private string? _testReport = null;
+    private string _testReport = "Run Test First.";
 
     private void DoTest()
     {
@@ -22,4 +22,5 @@
         string? testReport = Generator?.GetTester()?.DoTest(Generator);
         _testReport = testReport ?? "Test failed";
     }
+
 }

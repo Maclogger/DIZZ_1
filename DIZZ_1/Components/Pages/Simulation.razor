@@ -5,11 +5,11 @@
 @using DIZZ_1.BackEnd.Strategies
 @rendermode InteractiveServer
 
-<h3>Simulation</h3>
+<h1>Simulation</h1>
 
 @if (MainApp.Instance.StrategiesHandler.HasStrategies())
 {
-    <div class="card card-body bg-dark-subtle w-25">
+    <div class="card card-body bg-dark text-white p-4" style="width: 25rem;">
         <label>Strategy</label>
         <select class="form-control mt-1" @bind="_selectedStrategyName">
             @foreach (Strategy? strategy in MainApp.Instance.StrategiesHandler.Strategies)

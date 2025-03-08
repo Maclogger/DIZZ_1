@@ -1,20 +1,28 @@
 @using DIZZ_1.BackEnd.Generators.Empiric
-@using DIZZ_1.BackEnd.Generators.Testers
 @using DIZZ_1.BackEnd.Generators.Uniform
+@rendermode InteractiveServer
 <div class="row mb-3">
     <div class="col-3 p-0">
         <label>Min:</label>
-        <input @bind="((UniformGenerator<int>)DistrModel!.Generator).Min" type="number" step="0.1" class="form-control"/>
+        <input @bind="((UniformGenerator<int>)DistrModel!.Generator).Min"
+               type="number" step="1"
+               class="form-control"/>
     </div>
 
     <div class="col-3 pe-0">
         <label>Max:</label>
-        <input @bind="((UniformGenerator<int>)DistrModel!.Generator).Max" type="number" step="0.1" class="form-control"/>
+        <input @bind="((UniformGenerator<int>)DistrModel!.Generator).Max"
+               type="number" step="1"
+               class="form-control"/>
     </div>
 
     <div class="col-3 pe-0">
         <label>Probability:</label>
-        <input @bind="DistrModel.Probability" type="number" min="0" max="1.0" step="0.01" class="form-control"/>
+        <input @bind="DistrModel.Probability"
+               type="number" min="0" max="1.0" step="0.01"
+               class="form-control"
+               @oninput="HandleInputChange"
+               />
     </div>
 
     <div class="col-3 p-0 ps-3">
@@ -23,13 +31,22 @@
     </div>
 </div>
 
-@code {
-    [Parameter] public EmpiricDistrModel<int>? DistrModel { get; set; }
 
-    [Parameter] public EventCallback OnRemove { get; set; }
+@code {
+    [Parameter, EditorRequired] public EmpiricDistrModel<int>? DistrModel { get; set; }
+
+    [Parameter, EditorRequired] public EventCallback OnRemove { get; set; }
+
+    [Parameter, EditorRequired] public EventCallback OnChange { get; set; }
+
+    private async Task HandleInputChange()
+    {
+        await OnChange.InvokeAsync(null);
+    }
 
     private void RemoveRow()
     {
         OnRemove.InvokeAsync();
     }
+
 }

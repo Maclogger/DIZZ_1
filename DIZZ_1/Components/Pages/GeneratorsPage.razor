@@ -6,67 +6,76 @@
 @using DIZZ_1.Components.Basic
 @rendermode InteractiveServer
 
-
+<h1 class="">Tester</h1>
 <div class="container-fluid mb-5">
     <div class="row">
-        <h2 class="mx-1">Tester</h2>
     </div>
     <div class="row">
-        <!-- Discrete Uniform Generator -->
-        <GeneratorCard Headline="Discrete Uniform"
-                       Initialize="@(() => InitializeUniformGenerator<int>(MinUniDisc, MaxUniDisc, true))"
-                       Generator="MainApp.Instance.Generators.UniformDiscreteGenerator">
-            <label class="mt-3">Min:</label>
-            <input class="form-control" type="number" @bind="MinUniDisc" step="1"/>
+        <div class="d-flex flex-wrap p-0 m-0 gap-4">
+            <!-- Discrete Uniform Generator -->
+            <GeneratorCard Headline="Discrete Uniform"
+                           Initialize="@(() => InitializeUniformGenerator<int>(MinUniDisc, MaxUniDisc, true))"
+                           Generator="MainApp.Instance.Generators.UniformDiscreteGenerator"
+                           CouldBeInitialized="() => {return MinUniDisc < MaxUniDisc;}">
+                <label class="mt-3">Min:</label>
+                <input class="form-control" type="number" @bind="MinUniDisc" @bind:event="oninput" step="1"/>
 
-            <label class="mt-3">Max:</label>
-            <input class="form-control" type="number" @bind="MaxUniDisc" step="1"/>
-        </GeneratorCard>
+                <label class="mt-3">Max:</label>
+                <input class="form-control" type="number" @bind="MaxUniDisc" @bind:event="oninput" step="1"/>
+            </GeneratorCard>
 
-        <!-- Real Uniform Generator -->
-        <GeneratorCard Headline="Real Uniform"
-                       Initialize="@(() => InitializeUniformGenerator<double>(MinUniReal, MaxUniReal, false))"
-                       Generator="MainApp.Instance.Generators.UniformRealGenerator">
-            <label class="mt-3">Min:</label>
-            <input class="form-control" type="number" @bind="MinUniReal" step="0.1"/>
+            <!-- Real Uniform Generator -->
+            <GeneratorCard Headline="Real Uniform"
+                           Initialize="@(() => InitializeUniformGenerator<double>(MinUniReal, MaxUniReal, false))"
+                           Generator="MainApp.Instance.Generators.UniformRealGenerator"
+                           CouldBeInitialized="() => {return MinUniReal < MaxUniReal;}">
+                <label class="mt-3">Min:</label>
+                <input class="form-control" type="number" @bind="MinUniReal" @bind:event="oninput" step="0.1"/>
 
-            <label class="mt-3">Max:</label>
-            <input class="form-control" type="number" @bind="MaxUniReal" step="0.1"/>
-        </GeneratorCard>
+                <label class="mt-3">Max:</label>
+                <input class="form-control" type="number" @bind="MaxUniReal" @bind:event="oninput" step="0.1"/>
+            </GeneratorCard>
 
-        <!-- Real Empiric Generator -->
-        <GeneratorCard Headline="Real Empiric"
-                       Initialize="@(() => InitializeEmpiricGenerator(_empiricRealRows, false))"
-                       Generator="MainApp.Instance.Generators.EmpiricRealGenerator">
-            <div class="container">
-                @foreach (var row in _empiricRealRows)
-                {
-                    <EmpiricRealRow DistrModel="row" OnRemove="@(() => RemoveRow(row, _empiricRealRows))"/>
-                }
-                <div class="row">
-                    <button class="btn btn-primary mt-2" @onclick="() => AddRow(_empiricRealRows, false)">
-                        Add random distribution
-                    </button>
+            <!-- Discrete Empiric Generator -->
+            <GeneratorCard Headline="Discrete Empiric"
+                           Initialize="@(() => InitializeEmpiricGenerator(_empiricDiscreteRows, true))"
+                           Generator="MainApp.Instance.Generators.EmpiricDiscreteGenerator"
+
+                           CouldBeInitialized="() => CouldBeDiscreteEmpiricInitialized()">
+                <div class="container">
+                    @foreach (var row in _empiricDiscreteRows)
+                    {
+                        <EmpiricDiscreteRow
+                            DistrModel="row"
+                            OnRemove="@(() => RemoveRow(row, _empiricDiscreteRows))"
+                            OnChange="StateHasChanged"
+                            />
+                    }
+                    <div class="row">
+                        <button class="btn btn-primary mt-2" @onclick="() => AddRow(_empiricDiscreteRows, true)">
+                            Add random distribution
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </GeneratorCard>
+            </GeneratorCard>
 
-        <!-- Discrete Empiric Generator -->
-        <GeneratorCard Headline="Discrete Empiric"
-                       Initialize="@(() => InitializeEmpiricGenerator(_empiricDiscreteRows, true))"
-                       Generator="MainApp.Instance.Generators.EmpiricDiscreteGenerator">
-            <div class="container">
-                @foreach (var row in _empiricDiscreteRows)
-                {
-                    <EmpiricDiscreteRow DistrModel="row" OnRemove="@(() => RemoveRow(row, _empiricDiscreteRows))"/>
-                }
-                <div class="row">
-                    <button class="btn btn-primary mt-2" @onclick="() => AddRow(_empiricDiscreteRows, true)">
-                        Add random distribution
-                    </button>
+            <!-- Real Empiric Generator -->
+            <GeneratorCard Headline="Real Empiric"
+                           Initialize="@(() => InitializeEmpiricGenerator(_empiricRealRows, false))"
+                           Generator="MainApp.Instance.Generators.EmpiricRealGenerator" CouldBeInitialized="() => CouldBeRealEmpiricInitialized()">
+                <div class="container">
+                    @foreach (var row in _empiricRealRows)
+                    {
+                        <EmpiricRealRow DistrModel="row" OnRemove="@(() => RemoveRow(row, _empiricRealRows))"/>
+                    }
+                    <div class="row">
+                        <button class="btn btn-primary mt-2" @onclick="() => AddRow(_empiricRealRows, false)">
+                            Add random distribution
+                        </button>
+                    </div>
                 </div>
-            </div>
-        </GeneratorCard>
+            </GeneratorCard>
+        </div>
     </div>
 </div>
 
@@ -130,7 +139,6 @@
                     0.5
                 )
             );
-
         }
         else
         {
@@ -152,6 +160,32 @@
     private void RemoveRow<T>(EmpiricDistrModel<T> row, List<EmpiricDistrModel<T>> rows)
     {
         rows.Remove(row);
+    }
+
+    private bool CouldBeDiscreteEmpiricInitialized()
+    {
+        if (_empiricDiscreteRows.Count <= 0) return false;
+
+        double prob = 0.0;
+        foreach (EmpiricDistrModel<int> row in _empiricDiscreteRows)
+        {
+            prob += row.Probability;
+        }
+
+        return Math.Abs(prob - 1.0) < Config.Tolerance;
+    }
+
+    private bool CouldBeRealEmpiricInitialized()
+    {
+        if (_empiricRealRows.Count <= 0) return false;
+
+        double prob = 0.0;
+        foreach (EmpiricDistrModel<double> row in _empiricRealRows)
+        {
+            prob += row.Probability;
+        }
+
+        return Math.Abs(prob - 1.0) < Config.Tolerance;
     }
 
 }
