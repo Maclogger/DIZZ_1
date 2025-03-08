@@ -5,12 +5,12 @@ namespace DIZZ_1.BackEnd.Simulation;
 
 public class Main : SimCore
 {
-    public Strategy Strategy { get; }
+    public Strategy? Strategy { get; }
     public MainGenerators MainGenerators { get; set; }
     public Warehouse Warehouse { get; set; }
     public double Cost { get; set; }
 
-    public Main(Strategy strategy)
+    public Main(Strategy? strategy)
     {
         MainGenerators = new();
         Strategy = strategy;

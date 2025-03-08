@@ -2,7 +2,7 @@ namespace DIZZ_1.BackEnd.Strategies;
 
 public class StrategiesHandler
 {
-    public List<Strategy> Strategies { get; set; }
+    public List<Strategy?> Strategies { get; set; }
 
     public StrategiesHandler()
     {
@@ -20,7 +20,7 @@ public class StrategiesHandler
                 continue;
             }
 
-            Strategy strategy = new(fileName);
+            Strategy? strategy = new(fileName);
             Strategies.Add(strategy);
         }
     }

@@ -9,13 +9,24 @@
 
 @if (MainApp.Instance.StrategiesHandler.HasStrategies())
 {
-    <div class=""></div>
-    foreach (Strategy strategy in MainApp.Instance.StrategiesHandler.Strategies)
-    {
-        <button class="btn btn-primary m-2" @onclick="@(() => RunSimulation(strategy))">
-            @strategy.Name
+    <div class="card card-body bg-dark-subtle w-25">
+        <label>Strategy</label>
+        <select class="form-control mt-1" @bind="_selectedStrategyName">
+            @foreach (Strategy? strategy in MainApp.Instance.StrategiesHandler.Strategies)
+            {
+                <option value="@strategy!.Name">
+                    @strategy.Name
+                </option>
+            }
+            <option value="all">All Strategies</option>
+        </select>
+
+        <label class="mt-3">Replication Count</label>
+        <input @bind="_replicationCount" class="form-control" type="number" min="1" step="100"/>
+        <button class="btn btn-primary mt-3" @onclick="RunSimulation">
+            Run Simulation
         </button>
-    }
+    </div>
 }
 else
 {
@@ -23,14 +34,47 @@ else
 }
 
 @code {
-    private void RunSimulation(Strategy strategy)
+    private string _selectedStrategyName =
+        MainApp.Instance.StrategiesHandler.Strategies[0]!.Name;
+
+    private int _replicationCount = 1000;
+
+    private void RunSimulation()
     {
-        Main mainSimulation = new Main(strategy);
-        Console.WriteLine("Started");
+        if (_selectedStrategyName == "all")
+        {
+            RunAllStrategies();
+            return;
+        }
+
+        Strategy? strategyToRun = MainApp.Instance.StrategiesHandler
+            .Strategies.First(s => s!.Name == _selectedStrategyName);
+
+        RunStrategy(strategyToRun!);
+    }
+
+    private void RunStrategy(Strategy strategyToRun)
+    {
+        Main mainSimulation = new Main(strategyToRun);
+
+        Console.WriteLine($"Started Strategy: {strategyToRun.Name}");
         Stopwatch watch = Stopwatch.StartNew();
-        double solution = mainSimulation.Run(1_000_000);
-        Console.WriteLine($"Finished");
+
+        double solution = mainSimulation.Run(_replicationCount);
+        watch.Stop();
+
         Console.WriteLine(watch.Elapsed);
-        Console.WriteLine(solution);
+        Console.WriteLine($"Final Cost: {solution}");
+    }
+
+    private void RunAllStrategies()
+    {
+        foreach (Strategy? strategy in MainApp.Instance.StrategiesHandler.Strategies)
+        {
+            if (strategy != null)
+            {
+                RunStrategy(strategy);
+            }
+        }
     }
 }
