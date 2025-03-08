@@ -5,7 +5,7 @@
 <h1>Buffon's Needle</h1>
 <div class="d-flex flex-column card bg-dark p-4 mb-3 text-white" style="width: 25rem;">
     <label class="">Replication Count</label>
-    <input class="form-control" @bind="_replicationCount" min="2" step="10"/>
+    <input class="form-control" type="number" @bind="_replicationCount" min="2" step="10"/>
 
     <label class="mt-3">Circle Diameter</label>
     <input class="form-control" type="number" @bind="_diameter" min="0" step="0.1"/>
@@ -31,7 +31,7 @@
     private int _replicationCount = 10;
     private double _needleLength = 5;
     private double _diameter = 10;
-    private RealTimeChart? _chart;
+    private RealTimeChart _chart = new();
 
     public void Run()
     {
@@ -42,10 +42,7 @@
     private async Task AddRandomPoint(double newPi)
     {
         Console.WriteLine("AddRandomPoint");
-        if (_chart is not null)
-        {
-            await _chart.AddValue(newPi);
-        }
+        await _chart.AddValue(newPi);
     }
 
 }

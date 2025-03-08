@@ -1,7 +1,31 @@
 ﻿@page "/"
+@using DIZZ_1.BackEnd.Generators.Uniform
+@using DIZZ_1.Components.Chart
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<button @onclick="AdValue">Add Random Value</button>
+
+<RealTimeChart
+    @ref="_chart"
+    Title="Môj chart"
+    XAxisLabel="os x"
+    YAxisLabel="os y"
+/>
+
+@code {
+
+    private RealTimeChart _chart = new();
+    private UniformGenerator<double> _generator = UniformGeneratorFactory.CreateRealUniformGenerator(0.0, 10.0);
+
+    private async Task AdValue()
+    {
+        await _chart.AddValue(_generator.Generate());
+    }
+
+}

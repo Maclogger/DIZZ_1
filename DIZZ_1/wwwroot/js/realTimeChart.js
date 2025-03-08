@@ -1,13 +1,14 @@
 let charts = {};
 
 export function initializeChart(canvasId, config) {
+  console.log(config);
   const ctx = document.getElementById(canvasId).getContext("2d");
   charts[canvasId] = new Chart(ctx, {
     type: "line",
     data: {
       datasets: [
         {
-          label: config.Title,
+          label: config.title,
           data: [],
           borderColor: "rgba(75, 192, 192, 1)",
           backgroundColor: "rgba(75, 192, 192, 0.2)",
@@ -20,30 +21,28 @@ export function initializeChart(canvasId, config) {
     options: {
       scales: {
         x: {
-          type: "linear", // alebo "time", ak používate časové hodnoty
+          type: "linear",
           title: {
             display: true,
-            text: config.XAxisLabel,
+            text: config.xAxisLabel,
           },
         },
         y: {
           title: {
             display: true,
-            text: config.YAxisLabel,
+            text: config.yAxisLabel,
           },
         },
       },
       animation: {
         duration: 0,
       },
-      plugins: {
-        decimation: {
-          enabled: true,
-          algorithm: "min-max", // skúste aj "min-max"
-          samples: 50, // nastavte počet vzoriek podľa vášho prípadu použitia
-          threshold: 10, // spustí sa decimation, keď je viac ako 1000 bodov vo viditeľnej časti
-        },
-      },
+    /*  plugins: {
+        title: {
+          display: true,
+          text: config.title,
+        }
+      },*/
     },
   });
 }
@@ -51,7 +50,7 @@ export function initializeChart(canvasId, config) {
 export function addDataPoint(canvasId, value) {
   if (!(canvasId in charts)) return;
   const chart = charts[canvasId];
-  const newIndex = chart.data.datasets[0].data.length + 1;
+  const newIndex = chart.data.datasets[0].data.length;
   chart.data.datasets[0].data.push({ x: newIndex, y: value });
   chart.update("none");
 }

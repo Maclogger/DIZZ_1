@@ -35,12 +35,10 @@ namespace DIZZ_1.BackEnd.Needle
 
         protected override void AfterSimulation(double solution)
         {
-            Console.WriteLine("AfterSimulation");
         }
 
         protected override void AfterReplication(double solution)
         {
-            Console.WriteLine("AfterSimulationRun");
             double newPi = CalculatePi(solution);
             UpdatePi.Invoke(newPi);
         }
