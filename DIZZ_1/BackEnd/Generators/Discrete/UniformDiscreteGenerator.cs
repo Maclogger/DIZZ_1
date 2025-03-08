@@ -50,4 +50,5 @@ public class UniformDiscreteGenerator : Generator<int>
     {
         return $"UniformDiscreteGenerator: Min: {Min}, Max: {Max}";
     }
+
 }

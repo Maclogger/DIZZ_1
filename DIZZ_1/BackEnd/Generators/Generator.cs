@@ -6,7 +6,6 @@ public abstract class Generator<T>
 {
     public Random Random { get; set; }
     int Seed { get; set; } = 0;
-    public List<T> Data { get; set; } = new();
 
     protected Generator()
     {
@@ -19,8 +18,17 @@ public abstract class Generator<T>
     public T Generate()
     {
         T value = GenerateValue();
-        Data.Add(value);
+        if (Data is not null)
+        {
+            Data.Add(value);
+        }
         return value;
     }
     public abstract IGeneratorTester<T>? GetTester();
+
+    public List<T>? Data { get; set; } = null;
+    public void EnableHistory()
+    {
+        Data = new List<T>();
+    }
 }

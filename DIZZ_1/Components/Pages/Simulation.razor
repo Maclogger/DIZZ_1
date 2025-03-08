@@ -28,7 +28,7 @@ else
         Main mainSimulation = new Main(strategy);
         Console.WriteLine("Started");
         Stopwatch watch = Stopwatch.StartNew();
-        double solution = mainSimulation.Run(100_000);
+        double solution = mainSimulation.Run(1_000_000);
         Console.WriteLine($"Finished");
         Console.WriteLine(watch.Elapsed);
         Console.WriteLine(solution);
