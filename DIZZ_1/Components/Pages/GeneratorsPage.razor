@@ -85,12 +85,14 @@
         if (isDiscrete)
         {
             UniformDiscreteGenerator generator = new UniformDiscreteGenerator(Convert.ToInt32(min), Convert.ToInt32(max));
+            generator.EnableHistory();
             MainApp.Instance.Generators.UniformDiscreteGenerator = generator;
             return (generator as Generator<T>)!;
         }
         else
         {
             UniformRealGenerator generator = new UniformRealGenerator(Convert.ToDouble(min), Convert.ToDouble(max));
+            generator.EnableHistory();
             MainApp.Instance.Generators.UniformRealGenerator = generator;
             return (generator as Generator<T>)!;
         }
@@ -99,6 +101,7 @@
     private Generator<T> InitializeEmpiricGenerator<T>(List<EmpiricDistrModel<T>> rows, bool isDiscrete)
     {
         var generator = new EmpiricGenerator<T>(rows);
+        generator.EnableHistory();
 
         if (isDiscrete)
         {

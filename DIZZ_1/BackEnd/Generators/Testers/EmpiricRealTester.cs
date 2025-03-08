@@ -54,7 +54,7 @@ public class EmpiricRealTester : IGeneratorTester<double>
 
     private static string FormatActualGroup(KeyValuePair<(double Min, double Max), double> group)
     {
-        return $"<{group.Key.Min}; {group.Key.Max}) - {group.Value:F4}\n";
+        return $"<{group.Key.Min}; {group.Key.Max}) - {group.Value.ToString(Config.FloatFormat)}\n";
     }
 
     private static Dictionary<(double Min, double Max), double> CalculateGroupPercentages(
@@ -84,6 +84,11 @@ public class EmpiricRealTester : IGeneratorTester<double>
         EmpiricGenerator<double> gen,
         Dictionary<(double Min, double Max), int> groupCounts)
     {
+        if (gen.Data is null)
+        {
+            throw new ArgumentException("Generator did not have History Enabled.");
+        }
+
         foreach (double value in gen.Data)
         {
             foreach ((double Min, double Max) range in groupCounts.Keys)
@@ -102,6 +107,11 @@ public class EmpiricRealTester : IGeneratorTester<double>
         EmpiricGenerator<double> gen,
         Dictionary<(double Min, double Max), int> groupCounts)
     {
+        if (gen.Data is null)
+        {
+            throw new ArgumentException("Generator did not have History Enabled.");
+        }
+
         int totalDataPoints = gen.Data.Count;
 
         Dictionary<(double Min, double Max), double> groupPercentages =

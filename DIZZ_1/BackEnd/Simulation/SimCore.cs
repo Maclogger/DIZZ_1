@@ -1,27 +1,33 @@
-namespace DIZZ_1.BackEnd.Simulation;
+using System;
 
-public abstract class SimCore
+namespace DIZZ_1.BackEnd.Simulation
 {
-    public double Run(int replicationCount)
+    public abstract class SimCore
     {
-        BeforeSimulation();
-        double cumulative = 0;
-        for (int i = 0; i < replicationCount; i++)
+        public int CurrentReplication { get; set; } = 0;
+
+        public double Run(int replicationCount)
         {
-            BeforeSimulationRun();
-            double experimentResult = RunExperiment();
-            AfterSimulationRun(cumulative);
-            cumulative += experimentResult;
+            BeforeSimulation();
+            double cumulative = 0;
+            for (CurrentReplication = 1;
+                 CurrentReplication <= replicationCount;
+                 CurrentReplication++)
+            {
+                BeforeReplication();
+                double experimentResult = RunExperiment();
+                cumulative += experimentResult;
+                AfterReplication(cumulative / CurrentReplication);
+            }
+
+            AfterSimulation(cumulative / replicationCount);
+            return cumulative / replicationCount;
         }
 
-        AfterSimulation(cumulative);
-        return cumulative / replicationCount;
+        protected abstract void BeforeSimulation();
+        protected abstract void BeforeReplication();
+        protected abstract void AfterSimulation(double solution);
+        protected abstract void AfterReplication(double solution);
+        protected abstract double RunExperiment();
     }
-
-    public abstract void BeforeSimulation();
-    public abstract void BeforeSimulationRun();
-    public abstract void AfterSimulation(double cumulative);
-    public abstract void AfterSimulationRun(double cumulative);
-
-    public abstract double RunExperiment();
 }

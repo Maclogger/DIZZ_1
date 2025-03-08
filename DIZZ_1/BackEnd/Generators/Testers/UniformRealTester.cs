@@ -8,7 +8,11 @@ public class UniformRealTester : IGeneratorTester<double>
     {
         UniformRealGenerator gen = (UniformRealGenerator)generator;
 
-        List<double> data = gen.Data;
+        List<double>? data = gen.Data;
+        if (data is null)
+        {
+            throw new ArgumentException("Generator did not have History Enabled.");
+        }
 
         double minimum = double.MaxValue;
         double maximum = double.MinValue;
@@ -21,14 +25,13 @@ public class UniformRealTester : IGeneratorTester<double>
         }
 
         string sol = "Expected: \n";
-        sol += $"Minimum: {gen.Min}\n";
-        sol += $"Maximum: {gen.Max}\n";
-        sol += $"Average: {(gen.Max - gen.Min) / 2 + gen.Min}\n";
+        sol += $"Minimum: {gen.Min.ToString(Config.FloatFormat)}\n";
+        sol += $"Maximum: {gen.Max.ToString(Config.FloatFormat)}\n";
+        sol += $"Average: {((gen.Max - gen.Min) / 2 + gen.Min).ToString(Config.FloatFormat)}\n";
         sol += "Actual: \n";
-        sol += $"Minimum: {minimum}\n";
-        sol += $"Maximum: {maximum}\n";
-        sol += $"Average: {sum / data.Count}\n";
+        sol += $"Minimum: {minimum.ToString(Config.FloatFormat)}\n";
+        sol += $"Maximum: {maximum.ToString(Config.FloatFormat)}\n";
+        sol += $"Average: {(sum / data.Count).ToString(Config.FloatFormat)}\n";
         return sol;
     }
-
 }

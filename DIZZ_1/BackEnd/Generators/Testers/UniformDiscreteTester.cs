@@ -8,7 +8,11 @@ public class UniformDiscreteTester : IGeneratorTester<int>
     {
         UniformDiscreteGenerator gen = (UniformDiscreteGenerator)generator;
 
-        List<int> data = gen.Data;
+        List<int>? data = gen.Data;
+        if (data is null)
+        {
+            throw new ArgumentException("Generator did not have History Enabled.");
+        }
 
         int minimum = int.MaxValue;
         int maximum = int.MinValue;

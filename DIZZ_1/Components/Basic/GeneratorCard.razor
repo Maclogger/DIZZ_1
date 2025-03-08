@@ -52,16 +52,24 @@
         Generator = Initialize();
     }
 
+
     private string GetPrintValuesForTextArea()
     {
-        List<T> data = Generator?.Data ?? [];
-        if (data.Count <= Config.MaxPrintValuesInTextArea)
+        List<T> data = Generator?.Data ?? new List<T>();
+        int count = data.Count;
+        int limit = Config.MaxPrintValuesInTextArea;
+        IEnumerable<T> itemsToPrint = count <= limit ? data : data.Take(limit);
+
+        if (typeof(T) == typeof(double))
         {
-            return string.Join(", ", data);
+            IEnumerable<string>? formatted = itemsToPrint
+                .Cast<double>()
+                .Select(x => x.ToString(Config.FloatFormat));
+            return string.Join(", ", formatted) + (count > limit ? "..." : "");
         }
 
-        IEnumerable<T> limitedValues = data.Take(Config.MaxPrintValuesInTextArea);
-        return string.Join(", ", limitedValues) + "...";
+        return string.Join(", ", itemsToPrint) + (count > limit ? "..." : "");
     }
+
 
 }

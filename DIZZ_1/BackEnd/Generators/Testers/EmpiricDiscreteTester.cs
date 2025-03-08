@@ -84,6 +84,11 @@ public class EmpiricDiscreteTester : IGeneratorTester<int>
         EmpiricGenerator<int> gen,
         Dictionary<(int Min, int Max), int> groupCounts)
     {
+        if (gen.Data is null)
+        {
+            throw new ArgumentException("Generator did not have History Enabled.");
+        }
+
         foreach (int value in gen.Data)
         {
             foreach ((int Min, int Max) range in groupCounts.Keys)
@@ -102,6 +107,11 @@ public class EmpiricDiscreteTester : IGeneratorTester<int>
         EmpiricGenerator<int> gen,
         Dictionary<(int Min, int Max), int> groupCounts)
     {
+        if (gen.Data is null)
+        {
+            throw new ArgumentException("Generator did not have History Enabled.");
+        }
+
         int totalDataPoints = gen.Data.Count;
 
         Dictionary<(int Min, int Max), double> groupPercentages = new();
