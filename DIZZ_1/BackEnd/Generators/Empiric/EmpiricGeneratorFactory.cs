@@ -1,5 +1,4 @@
-using DIZZ_1.BackEnd.Generators.Discrete;
-using DIZZ_1.BackEnd.Generators.Real;
+using DIZZ_1.BackEnd.Generators.Uniform;
 
 namespace DIZZ_1.BackEnd.Generators.Empiric;
 
@@ -14,7 +13,7 @@ public static class EmpiricGeneratorFactory
         foreach ((int min, int max, double prob) in ranges)
         {
             list.Add(new EmpiricDistrModel<int>(
-                new UniformDiscreteGenerator(min, max),
+                UniformGeneratorFactory.CreateDiscreteUniformGenerator(min, max),
                 prob
             ));
         }
@@ -32,7 +31,7 @@ public static class EmpiricGeneratorFactory
         foreach ((double min, double max, double prob) in ranges)
         {
             list.Add(new EmpiricDistrModel<double>(
-                new UniformRealGenerator(min, max),
+                UniformGeneratorFactory.CreateRealUniformGenerator(min, max),
                 prob
             ));
         }

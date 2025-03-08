@@ -1,6 +1,4 @@
-using System;
-using System.Threading.Tasks;
-using DIZZ_1.BackEnd.Generators.Real;
+using DIZZ_1.BackEnd.Generators.Uniform;
 using DIZZ_1.BackEnd.Simulation;
 using DIZZ_1.Components.Chart;
 
@@ -9,8 +7,8 @@ namespace DIZZ_1.BackEnd.Needle
     public class BuffonNeedle : SimCore
     {
         public Func<double, Task> UpdatePi { get; }
-        private readonly UniformRealGenerator _randomY;
-        private readonly UniformRealGenerator _randomAlfa;
+        private readonly UniformGenerator<double> _randomY;
+        private readonly UniformGenerator<double> _randomAlfa;
         private readonly double _d;
         private readonly double _l;
 
@@ -20,8 +18,8 @@ namespace DIZZ_1.BackEnd.Needle
             UpdatePi = updatePi;
             _d = pD;
             _l = pL;
-            _randomAlfa = new UniformRealGenerator(0.0, 180.0);
-            _randomY = new UniformRealGenerator(0.0, 1.0);
+            _randomAlfa = UniformGeneratorFactory.CreateRealUniformGenerator(0.0, 180.0);
+            _randomY = UniformGeneratorFactory.CreateRealUniformGenerator(0.0, 1.0);
             RealTimeChart = chart;
         }
 

@@ -1,5 +1,5 @@
-using DIZZ_1.BackEnd.Generators.Discrete;
 using DIZZ_1.BackEnd.Generators.Empiric;
+using DIZZ_1.BackEnd.Generators.Uniform;
 
 namespace DIZZ_1.BackEnd.Generators.Testers;
 
@@ -33,7 +33,7 @@ public class EmpiricDiscreteTester : IGeneratorTester<int>
 
     private static string FormatExpectedGroup(EmpiricDistrModel<int> distrModel)
     {
-        UniformDiscreteGenerator uniformDiscreteGen = (UniformDiscreteGenerator)distrModel.Generator;
+        UniformGenerator<int> uniformDiscreteGen = (UniformGenerator<int>)distrModel.Generator;
         return $"<{uniformDiscreteGen.Min}; {uniformDiscreteGen.Max}) - {distrModel.Probability}\n";
     }
 
@@ -72,7 +72,8 @@ public class EmpiricDiscreteTester : IGeneratorTester<int>
 
         foreach (EmpiricDistrModel<int> distrModel in gen.DistrModels)
         {
-            UniformDiscreteGenerator uniformDiscreteGen = (UniformDiscreteGenerator)distrModel.Generator;
+            UniformGenerator<int> uniformDiscreteGen =
+                (UniformGenerator<int>)distrModel.Generator;
             (int Min, int Max) range = (uniformDiscreteGen.Min, uniformDiscreteGen.Max);
             groupCounts[range] = 0;
         }

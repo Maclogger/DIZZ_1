@@ -55,12 +55,12 @@ else
 
     private void RunStrategy(Strategy strategyToRun)
     {
-        Main mainSimulation = new Main(strategyToRun);
+        MainSimulation mainSimulationSimulation = new MainSimulation(strategyToRun);
 
         Console.WriteLine($"Started Strategy: {strategyToRun.Name}");
         Stopwatch watch = Stopwatch.StartNew();
 
-        double solution = mainSimulation.Run(_replicationCount);
+        double solution = mainSimulationSimulation.Run(_replicationCount);
         watch.Stop();
 
         Console.WriteLine(watch.Elapsed);

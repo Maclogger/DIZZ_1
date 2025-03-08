@@ -1,4 +1,4 @@
-using DIZZ_1.BackEnd.Generators.Discrete;
+using DIZZ_1.BackEnd.Generators.Uniform;
 
 namespace DIZZ_1.BackEnd.Generators.Testers;
 
@@ -6,7 +6,7 @@ public class UniformDiscreteTester : IGeneratorTester<int>
 {
     public string DoTest(Generator<int> generator)
     {
-        UniformDiscreteGenerator gen = (UniformDiscreteGenerator)generator;
+        UniformGenerator<int> gen = (UniformGenerator<int>)generator;
 
         List<int>? data = gen.Data;
         if (data is null)

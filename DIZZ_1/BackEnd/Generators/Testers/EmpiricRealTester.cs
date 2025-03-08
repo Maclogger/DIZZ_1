@@ -1,5 +1,5 @@
 using DIZZ_1.BackEnd.Generators.Empiric;
-using DIZZ_1.BackEnd.Generators.Real;
+using DIZZ_1.BackEnd.Generators.Uniform;
 
 namespace DIZZ_1.BackEnd.Generators.Testers;
 
@@ -33,7 +33,7 @@ public class EmpiricRealTester : IGeneratorTester<double>
 
     private static string FormatExpectedGroup(EmpiricDistrModel<double> distrModel)
     {
-        UniformRealGenerator uniformRealGen = (UniformRealGenerator)distrModel.Generator;
+        UniformGenerator<double> uniformRealGen = (UniformGenerator<double>)distrModel.Generator;
         return $"<{uniformRealGen.Min}; {uniformRealGen.Max}) - {distrModel.Probability}\n";
     }
 
@@ -72,7 +72,7 @@ public class EmpiricRealTester : IGeneratorTester<double>
 
         foreach (EmpiricDistrModel<double> distrModel in gen.DistrModels)
         {
-            UniformRealGenerator uniformRealGen = (UniformRealGenerator)distrModel.Generator;
+            UniformGenerator<double> uniformRealGen = (UniformGenerator<double>)distrModel.Generator;
             (double Min, double Max) range = (uniformRealGen.Min, uniformRealGen.Max);
             groupCounts[range] = 0;
         }

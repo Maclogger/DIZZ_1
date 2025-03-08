@@ -1,4 +1,4 @@
-using DIZZ_1.BackEnd.Generators.Real;
+using DIZZ_1.BackEnd.Generators.Uniform;
 
 namespace DIZZ_1.BackEnd.Generators.Testers;
 
@@ -6,7 +6,7 @@ public class UniformRealTester : IGeneratorTester<double>
 {
     public string DoTest(Generator<double> generator)
     {
-        UniformRealGenerator gen = (UniformRealGenerator)generator;
+        UniformGenerator<double> gen = (UniformGenerator<double>)generator;
 
         List<double>? data = gen.Data;
         if (data is null)

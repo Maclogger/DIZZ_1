@@ -1,9 +1,8 @@
 @page "/tester"
 @using DIZZ_1.BackEnd
 @using DIZZ_1.BackEnd.Generators
-@using DIZZ_1.BackEnd.Generators.Discrete
 @using DIZZ_1.BackEnd.Generators.Empiric
-@using DIZZ_1.BackEnd.Generators.Real
+@using DIZZ_1.BackEnd.Generators.Uniform
 @using DIZZ_1.Components.Basic
 @rendermode InteractiveServer
 
@@ -84,14 +83,14 @@
     {
         if (isDiscrete)
         {
-            UniformDiscreteGenerator generator = new UniformDiscreteGenerator(Convert.ToInt32(min), Convert.ToInt32(max));
+            UniformGenerator<int> generator = UniformGeneratorFactory.CreateDiscreteUniformGenerator(Convert.ToInt32(min), Convert.ToInt32(max));
             generator.EnableHistory();
             MainApp.Instance.Generators.UniformDiscreteGenerator = generator;
             return (generator as Generator<T>)!;
         }
         else
         {
-            UniformRealGenerator generator = new UniformRealGenerator(Convert.ToDouble(min), Convert.ToDouble(max));
+            UniformGenerator<double> generator = UniformGeneratorFactory.CreateRealUniformGenerator(Convert.ToDouble(min), Convert.ToDouble(max));
             generator.EnableHistory();
             MainApp.Instance.Generators.UniformRealGenerator = generator;
             return (generator as Generator<T>)!;
@@ -122,20 +121,31 @@
             int newMinimum = 0;
             if (rows.Count >= 1)
             {
-                newMinimum = (rows[^1].Generator! as UniformDiscreteGenerator)!.Max;
+                newMinimum = (rows[^1].Generator as UniformGenerator<int>)!.Max;
             }
 
-            rows.Add(new EmpiricDistrModel<T>((new UniformDiscreteGenerator(newMinimum, newMinimum + 10) as Generator<T>)!, 0.5));
+            rows.Add(
+                new EmpiricDistrModel<T>(
+                    (UniformGeneratorFactory.CreateDiscreteUniformGenerator(newMinimum, newMinimum + 10) as Generator<T>)!,
+                    0.5
+                )
+            );
+
         }
         else
         {
             double newMinimum = 0;
             if (rows.Count >= 1)
             {
-                newMinimum = (rows[^1].Generator! as UniformRealGenerator)!.Max;
+                newMinimum = (rows[^1].Generator as UniformGenerator<double>)!.Max;
             }
 
-            rows.Add(new EmpiricDistrModel<T>((new UniformRealGenerator(newMinimum, newMinimum + 1.0) as Generator<T>)!, 0.5));
+            rows.Add(
+                new EmpiricDistrModel<T>(
+                    (UniformGeneratorFactory.CreateRealUniformGenerator(newMinimum, newMinimum + 1.0) as Generator<T>)!,
+                    0.5
+                )
+            );
         }
     }
 

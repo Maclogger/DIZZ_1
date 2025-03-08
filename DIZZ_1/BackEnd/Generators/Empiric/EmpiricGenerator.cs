@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using DIZZ_1.BackEnd.Generators.Real;
 using DIZZ_1.BackEnd.Generators.Testers;
+using DIZZ_1.BackEnd.Generators.Uniform;
 
 namespace DIZZ_1.BackEnd.Generators.Empiric;
 
@@ -19,13 +19,13 @@ public class EmpiricDistrModel<T>
 public class EmpiricGenerator<T> : Generator<T>
 {
     public List<EmpiricDistrModel<T>> DistrModels;
-    public UniformRealGenerator DistrChooserGenerator { get; set; }
+    public UniformGenerator<double> DistrChooserGenerator { get; set; }
 
 
     public EmpiricGenerator(List<EmpiricDistrModel<T>> distrModels)
     {
         DistrModels = distrModels;
-        DistrChooserGenerator = new UniformRealGenerator(0.0, 1.0);
+        DistrChooserGenerator = UniformGeneratorFactory.CreateRealUniformGenerator(0.0, 1.0);
     }
 
     protected override T GenerateValue()

@@ -3,14 +3,14 @@ using DIZZ_1.BackEnd.Strategies;
 
 namespace DIZZ_1.BackEnd.Simulation;
 
-public class Main : SimCore
+public class MainSimulation : SimCore
 {
     public Strategy? Strategy { get; }
     public MainGenerators MainGenerators { get; set; }
     public Warehouse Warehouse { get; set; }
     public double Cost { get; set; }
 
-    public Main(Strategy? strategy)
+    public MainSimulation(Strategy? strategy)
     {
         MainGenerators = new();
         Strategy = strategy;
