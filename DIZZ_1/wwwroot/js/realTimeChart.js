@@ -54,3 +54,10 @@ export function addDataPoint(canvasId, value) {
   chart.data.datasets[0].data.push({ x: newIndex, y: value });
   chart.update("none");
 }
+
+export function reset(canvasId) {
+  if (!(canvasId in charts)) return;
+  const chart = charts[canvasId];
+  chart.data.datasets[0].data = [];
+  chart.update("none");
+}

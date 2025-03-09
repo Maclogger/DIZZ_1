@@ -5,7 +5,6 @@ namespace DIZZ_1.BackEnd.Simulation;
 public class SimulationProgress<TProg>
 {
     public int CurrentIteration { get; set; }
-    public int TotalIterations { get; set; }
     public TProg Cumulative { get; set; } = default!;
 }
 
@@ -19,36 +18,38 @@ public abstract class AsyncSimCore<TIter, TProg>
         CancellationToken cancellationToken = default
     )
     {
-        TProg cumulative = initialValue;
-        await BeforeSimulation();
-        try
+        return await Task.Run(async () =>
         {
-            for (int replication = 1; replication <= replicationCount; replication++)
+            TProg cumulative = initialValue;
+            await BeforeSimulation();
+            try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                await BeforeReplication(replication);
-                TIter experimentResult = await RunExperiment();
-                cumulative = aggregator(cumulative, experimentResult);
-
-                progress.Report(new SimulationProgress<TProg>
+                for (int replication = 1; replication <= replicationCount; replication++)
                 {
-                    CurrentIteration = replication,
-                    Cumulative = cumulative,
-                    TotalIterations = replication
-                });
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                await AfterReplication(cumulative);
+                    await BeforeReplication(replication);
+                    TIter experimentResult = await RunExperiment();
+                    cumulative = aggregator(cumulative, experimentResult);
+
+                    progress.Report(new SimulationProgress<TProg>
+                    {
+                        CurrentIteration = replication,
+                        Cumulative = cumulative,
+                    });
+
+                    await AfterReplication(cumulative);
+                }
             }
-        }
-        catch (OperationCanceledException e)
-        {
+            catch (OperationCanceledException e)
+            {
+                await AfterSimulation(cumulative);
+                return cumulative;
+            }
+
             await AfterSimulation(cumulative);
             return cumulative;
-        }
-
-        await AfterSimulation(cumulative);
-        return cumulative;
+        });
     }
 
     protected virtual Task BeforeSimulation() => Task.CompletedTask;

@@ -25,9 +25,8 @@
     </div>
 }
 
-@*
-<RealTimeChart @ref="_chart" Title="Teploty" XAxisLabel="Čas" YAxisLabel="Teplota (°C)"/>
-*@
+<RealTimeChart @ref="_chart" Title="Pi Approximation" XAxisLabel="Replication" YAxisLabel="Pi"/>
+<p>Replications x@(_replicationCount / 1000)</p>
 
 @code {
     private double? _pi = null;
@@ -35,15 +34,17 @@
     private double _needleLength = 5;
     private double _diameter = 10;
 
+    RealTimeChart _chart = new();
+
     public Needle()
     {
-        Progress = new Progress<SimulationProgress<int>>(
-            progress =>
+        Progress = new Progress<SimulationProgress<int>>(async void (progress) =>
             {
-                if (progress.CurrentIteration % 10_000 == 0)
+                if (progress.CurrentIteration % (_replicationCount / 1000) == 0)
                 {
                     _pi = _needleLength / (_diameter * ((double)progress.Cumulative / progress.CurrentIteration));
-                    Console.WriteLine($"{progress.CurrentIteration}: {progress.Cumulative} - {_pi}");
+                    //Console.WriteLine($"{progress.CurrentIteration}: {progress.Cumulative} - {_pi}");
+                    await _chart.AddValue(_pi.Value);
                     StateHasChanged();
                 }
             });
@@ -53,8 +54,10 @@
 
     public async Task Run()
     {
+        await _chart.Reset();
         BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength);
         _pi = await needle.RunCompleteSimulation(_replicationCount, Progress);
         StateHasChanged();
     }
+
 }

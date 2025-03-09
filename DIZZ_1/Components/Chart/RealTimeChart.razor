@@ -6,14 +6,11 @@
 </div>
 
 @code {
-    [Parameter]
-    public string Title { get; set; } = "Line Chart";
+    [Parameter] public string Title { get; set; } = "Line Chart";
 
-    [Parameter]
-    public string XAxisLabel { get; set; } = "X Axis";
+    [Parameter] public string XAxisLabel { get; set; } = "X Axis";
 
-    [Parameter]
-    public string YAxisLabel { get; set; } = "Y Axis";
+    [Parameter] public string YAxisLabel { get; set; } = "Y Axis";
 
     private string _canvasId = $"chart-{Guid.NewGuid()}";
 
@@ -40,7 +37,14 @@
     {
         if (_module is not null)
         {
-            await _module.InvokeVoidAsync("addDataPoint", _canvasId, value);
+            try
+            {
+                await _module.InvokeVoidAsync("addDataPoint", _canvasId, value);
+            }
+            catch (Exception)
+            {
+                // Optionally log the exception or handle the cancellation gracefully
+            }
         }
     }
 
@@ -50,4 +54,13 @@
         public string XAxisLabel { get; set; } = "";
         public string YAxisLabel { get; set; } = "";
     }
+
+    public async Task Reset()
+    {
+        if (_module is not null)
+        {
+            await _module.InvokeVoidAsync("reset", _canvasId);
+        }
+    }
+
 }
