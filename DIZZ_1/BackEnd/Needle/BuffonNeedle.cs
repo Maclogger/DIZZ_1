@@ -1,6 +1,5 @@
 using DIZZ_1.BackEnd.Generators.Uniform;
 using DIZZ_1.BackEnd.Simulation;
-using DIZZ_1.Components.Chart;
 
 namespace DIZZ_1.BackEnd.Needle
 {
@@ -11,7 +10,7 @@ namespace DIZZ_1.BackEnd.Needle
         private readonly double _d;
         private readonly double _l;
 
-        public CancellationToken Token = CancellationToken.None;
+        public CancellationTokenSource Cts { get; } = new();
 
         public BuffonNeedle(double pD, double pL)
         {
@@ -29,7 +28,7 @@ namespace DIZZ_1.BackEnd.Needle
                 (total, wasInCircle) => total + (wasInCircle ? 1 : 0),
                 0,
                 progress,
-                Token
+                Cts.Token
             );
             return CalculatePi(cumulative, replicationCount);
         }

@@ -14,7 +14,8 @@
     <label class="mt-3">Needle Length</label>
     <input class="form-control" type="number" @bind="_needleLength" min="0" step="0.1"/>
 
-    <button class="btn btn-primary mt-3 mb-1" @onclick="Run">Run</button>
+    <button class="btn btn-primary mt-3" @onclick="Run">Run</button>
+    <button class="btn btn-danger mt-3 mb-1" @onclick="Stop" disabled="@_isStopped">Stop</button>
 </div>
 
 
@@ -33,31 +34,42 @@
     private int _replicationCount = 10;
     private double _needleLength = 5;
     private double _diameter = 10;
+    private bool _isStopped = true;
 
     RealTimeChart _chart = new();
 
     public Needle()
     {
         Progress = new Progress<SimulationProgress<int>>(async void (progress) =>
+        {
+            if (progress.CurrentIteration % (_replicationCount / 1000) == 0)
             {
-                if (progress.CurrentIteration % (_replicationCount / 1000) == 0)
-                {
-                    _pi = _needleLength / (_diameter * ((double)progress.Cumulative / progress.CurrentIteration));
-                    //Console.WriteLine($"{progress.CurrentIteration}: {progress.Cumulative} - {_pi}");
-                    await _chart.AddValue(_pi.Value);
-                    StateHasChanged();
-                }
-            });
+                _pi = _needleLength / (_diameter * ((double)progress.Cumulative / progress.CurrentIteration));
+                //Console.WriteLine($"{progress.CurrentIteration}: {progress.Cumulative} - {_pi}");
+                await _chart.AddValue(_pi.Value);
+                StateHasChanged();
+            }
+        });
     }
 
     public IProgress<SimulationProgress<int>> Progress { get; }
+    private CancellationTokenSource Cts { get; set; }
 
     public async Task Run()
     {
+        _isStopped = false;
         await _chart.Reset();
         BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength);
+        Cts = needle.Cts;
         _pi = await needle.RunCompleteSimulation(_replicationCount, Progress);
+        _isStopped = true;
         StateHasChanged();
+    }
+
+    private void Stop()
+    {
+        Console.WriteLine("LOL");
+        Cts.Cancel();
     }
 
 }
