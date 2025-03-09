@@ -1,5 +1,6 @@
 @page "/Needle"
 @using DIZZ_1.BackEnd.Needle
+@using DIZZ_1.BackEnd.Simulation
 @using DIZZ_1.Components.Chart
 @rendermode InteractiveServer
 <h1>Buffon's Needle</h1>
@@ -24,25 +25,36 @@
     </div>
 }
 
+@*
 <RealTimeChart @ref="_chart" Title="Teploty" XAxisLabel="Čas" YAxisLabel="Teplota (°C)"/>
+*@
 
 @code {
     private double? _pi = null;
     private int _replicationCount = 10;
     private double _needleLength = 5;
     private double _diameter = 10;
-    private RealTimeChart _chart = new();
 
-    public void Run()
+    public Needle()
     {
-        BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength, AddRandomPoint, _chart);
-        _pi = needle.DoExperiment(_replicationCount);
+        Progress = new Progress<SimulationProgress<int>>(
+            progress =>
+            {
+                if (progress.CurrentIteration % 10_000 == 0)
+                {
+                    _pi = _needleLength / (_diameter * ((double)progress.Cumulative / progress.CurrentIteration));
+                    Console.WriteLine($"{progress.CurrentIteration}: {progress.Cumulative} - {_pi}");
+                    StateHasChanged();
+                }
+            });
     }
 
-    private async Task AddRandomPoint(double newPi)
-    {
-        Console.WriteLine("AddRandomPoint");
-        await _chart.AddValue(newPi);
-    }
+    public IProgress<SimulationProgress<int>> Progress { get; }
 
+    public async Task Run()
+    {
+        BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength);
+        _pi = await needle.RunCompleteSimulation(_replicationCount, Progress);
+        StateHasChanged();
+    }
 }
