@@ -38,7 +38,7 @@ namespace DIZZ_1.BackEnd.Needle
             return _l / (_d * solution);
         }
 
-        protected override Task<bool> RunExperiment()
+        protected override Task<bool> RunExperiment(int replication)
         {
             double alfaDegrees = _randomAlfa.Generate();
             double alfaRadians = alfaDegrees * (Math.PI / 180.0);

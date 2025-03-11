@@ -30,7 +30,7 @@ public abstract class AsyncSimCore<TIter, TProg>
             for (int replication = 1; replication <= replicationCount; replication++)
             {
                 await BeforeReplication(replication);
-                TIter experimentResult = await RunExperiment();
+                TIter experimentResult = await RunExperiment(replication);
                 cumulative = aggregator(cumulative, experimentResult);
 
                 progress.Report(new SimulationProgress<TProg>
@@ -69,5 +69,5 @@ public abstract class AsyncSimCore<TIter, TProg>
     protected virtual Task AfterReplication(TProg cumulative, int replication) =>
         Task.CompletedTask;
 
-    protected abstract Task<TIter> RunExperiment();
+    protected abstract Task<TIter> RunExperiment(int replication);
 }

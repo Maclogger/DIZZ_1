@@ -1,7 +1,6 @@
 let charts = {};
 
 export function initializeChart(canvasId, config) {
-    console.log(config);
     const ctx = document.getElementById(canvasId).getContext("2d");
     charts[canvasId] = new Chart(ctx, {
         type: "line",

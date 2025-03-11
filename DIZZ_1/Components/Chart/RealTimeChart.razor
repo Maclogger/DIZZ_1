@@ -24,8 +24,9 @@
             _module = await JsRuntime.InvokeAsync<IJSObjectReference>(
                 "import", "./js/realTimeChart.js");
 
-            await _module.InvokeVoidAsync("initializeChart", _canvasId,
-                new ChartConfiguration
+            await _module.InvokeVoidAsync("initializeChart",
+                _canvasId,
+                new RealTimeChartConfiguration
                 {
                     Title = Title,
                     XAxisLabel = XAxisLabel,
@@ -49,7 +50,7 @@
         }
     }
 
-    public class ChartConfiguration
+    public class RealTimeChartConfiguration
     {
         public string Title { get; set; } = "";
         public string XAxisLabel { get; set; } = "";

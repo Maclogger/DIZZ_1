@@ -38,56 +38,80 @@ public class MainSimulation : AsyncSimCore<double, double>
         return cumulative / doneReplications;
     }
 
-    protected override Task<double> RunExperiment()
+    protected override Task<double> RunExperiment(int replication)
     {
+        List<double>? dailyCosts = (replication <= 1 ? new() : null);
         for (int week = 1; week <= 30; week++)
         {
             if (Config.PrintCompleteReplication) Console.WriteLine($"Week: {week} / 30");
             HandleSuppliers(week); // Monday
-            CalculateStorageCost(4); // Monday -> Thursday
-            HandleOutput(); // Friday
+            double storageCost = CalculateStorageCost(4);
+            if (replication <= 1)
+            {
+                dailyCosts!.Add(storageCost / 4); // PON
+                dailyCosts.Add(storageCost / 4); // UTO
+                dailyCosts.Add(storageCost / 4); // STR
+                dailyCosts.Add(storageCost / 4); // ŠTV
+            }
+            Cost += storageCost;
+            double fine = HandleOutput(); // Friday
+            Cost += fine;
             if (Config.PrintCompleteReplication) Console.WriteLine("After Output:");
             if (Config.PrintCompleteReplication) Console.WriteLine(Warehouse);
-            CalculateStorageCost(3); // Friday -> Sunday
+            storageCost = CalculateStorageCost(3); // Friday -> Sunday
+            if (replication <= 1)
+            {
+                dailyCosts!.Add(storageCost / 3 + fine); // PIA
+                dailyCosts.Add(storageCost / 3); // SOB
+                dailyCosts.Add(storageCost / 3); // NED
+            }
+            Cost += storageCost;
             if (Config.PrintCompleteReplication)
                 Console.WriteLine("---------------------------------");
+        }
+
+        if (replication <= 1)
+        {
+            MainApp.Instance.DailyCosts = dailyCosts!;
         }
 
         return Task.FromResult(Cost);
     }
 
-    private void HandleOutput()
+    private double HandleOutput()
     {
         int wantedAbsorbersCount = MainGenerators.AbsorbersGen.Generate();
         int wantedBrakePadsCount = MainGenerators.BrakePadsGen.Generate();
         int wantedLightsCount = MainGenerators.LightsGen.Generate();
 
-        HandleFineAndOutput(wantedAbsorbersCount, ref Warehouse.AbsorbersCount);
-        HandleFineAndOutput(wantedBrakePadsCount, ref Warehouse.BrakePadsCount);
-        HandleFineAndOutput(wantedLightsCount, ref Warehouse.LightsCount);
+        double fine = GetFineAndHandleOutput(wantedAbsorbersCount, ref Warehouse.AbsorbersCount);
+        fine += GetFineAndHandleOutput(wantedBrakePadsCount, ref Warehouse.BrakePadsCount);
+        fine += GetFineAndHandleOutput(wantedLightsCount, ref Warehouse.LightsCount);
+        return fine;
     }
 
-    private void HandleFineAndOutput(int wantedItems, ref int itemsInWarehouse)
+    private double GetFineAndHandleOutput(int wantedItems, ref int itemsInWarehouse)
     {
         if (itemsInWarehouse - wantedItems <= 0)
         {
             double fine = (wantedItems - itemsInWarehouse) * Config.FinePerUnit;
-            Cost += fine;
             itemsInWarehouse = 0;
             if (Config.PrintCompleteReplication) Console.WriteLine($"Paying fine: {fine}");
-            return;
+            return fine;
         }
 
         itemsInWarehouse -= wantedItems;
+        return 0.0;
     }
 
 
-    private void CalculateStorageCost(int countOfDays)
+    private double CalculateStorageCost(int countOfDays)
     {
-        Cost += Warehouse.AbsorbersCount * Config.AbsorbersDailyStorageCostPerUnit * countOfDays;
-        Cost += Warehouse.BrakePadsCount * Config.BrakePadsDailyStorageCostPerUnit * countOfDays;
-        Cost += Warehouse.LightsCount * Config.LightsDailyStorageCostPerUnit * countOfDays;
-        if (Config.PrintCompleteReplication) Console.WriteLine($"Cost: {Cost}");
+        double storageCost = Warehouse.AbsorbersCount * Config.AbsorbersDailyStorageCostPerUnit * countOfDays;
+        storageCost += Warehouse.BrakePadsCount * Config.BrakePadsDailyStorageCostPerUnit * countOfDays;
+        storageCost += Warehouse.LightsCount * Config.LightsDailyStorageCostPerUnit * countOfDays;
+        if (Config.PrintCompleteReplication) Console.WriteLine($"storageCost: {storageCost}");
+        return storageCost;
     }
 
     private void HandleSuppliers(int week)

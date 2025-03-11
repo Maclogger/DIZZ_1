@@ -25,5 +25,6 @@ namespace DIZZ_1.BackEnd
         public StrategiesHandler StrategiesHandler { get; set; }
 
         public Config Config { get; set; }
+        public List<double> DailyCosts { get; set; } = new();
     }
 }

@@ -1,0 +1,52 @@
+@using DIZZ_1.BackEnd
+@inject IJSRuntime JsRuntime
+
+
+<div class="overflow-hidden" style="width: 1600px; height: 800px">
+    <canvas id="@_canvasId" width="1600" height="800"></canvas>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Bar Chart";
+    [Parameter] public List<double>? Data { get; set; }
+
+    private string _canvasId = $"chart-{Guid.NewGuid()}";
+
+    private IJSObjectReference? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Data is not null)
+        {
+            await Reinitialize(Data);
+        }
+    }
+
+
+    public async Task Reinitialize(List<double> newData)
+    {
+        Data = newData;
+        _module = await JsRuntime.InvokeAsync<IJSObjectReference>(
+            "import", "./js/barChart.js");
+
+        List<string> days = ["PON", "UTO", "STR", "ŠTV", "PIA", "SOB", "NED"];
+        for (int i = 0; i < newData.Count; i++)
+        {
+            Console.WriteLine($"{i + 1} - {days[(i % days.Count)]}: {newData[i]}");
+        }
+
+        await _module.InvokeVoidAsync("initializeChart",
+            _canvasId,
+            new BarChartConfiguration
+            {
+                Title = Title
+            },
+            Data);
+    }
+
+    public class BarChartConfiguration
+    {
+        public string Title { get; set; } = "";
+    }
+
+}
