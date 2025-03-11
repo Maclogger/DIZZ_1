@@ -19,6 +19,7 @@ export function initializeChart(canvasId, config) {
       ],
     },
     options: {
+      responsive: false,
       scales: {
         x: {
           type: "linear",
@@ -34,9 +35,11 @@ export function initializeChart(canvasId, config) {
           },
         },
       },
+/*
       animation: {
         duration: 0,
       },
+*/
     /*  plugins: {
         title: {
           display: true,
@@ -47,12 +50,21 @@ export function initializeChart(canvasId, config) {
   });
 }
 
+let pendingUpdate = false;
+
 export function addDataPoint(canvasId, value) {
   if (!(canvasId in charts)) return;
   const chart = charts[canvasId];
   const newIndex = chart.data.datasets[0].data.length;
   chart.data.datasets[0].data.push({ x: newIndex, y: value });
-  chart.update("none");
+
+  if (!pendingUpdate) {
+    pendingUpdate = true;
+    requestAnimationFrame(() => {
+      chart.update("none");
+      pendingUpdate = false;
+    });
+  }
 }
 
 export function reset(canvasId) {

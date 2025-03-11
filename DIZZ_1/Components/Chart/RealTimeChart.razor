@@ -37,7 +37,10 @@
     {
         if (_module is not null)
         {
-                await _module.InvokeVoidAsync("addDataPoint", _canvasId, value);
+            /*
+            Console.WriteLine($"Adding data point: {value:F2}");
+            */
+            await _module.InvokeVoidAsync("addDataPoint", _canvasId, value);
         }
     }
 

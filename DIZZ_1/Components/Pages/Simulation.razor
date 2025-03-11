@@ -3,6 +3,7 @@
 @using DIZZ_1.BackEnd
 @using DIZZ_1.BackEnd.Simulation
 @using DIZZ_1.BackEnd.Strategies
+@using DIZZ_1.Components.Chart
 @rendermode InteractiveServer
 
 <h1>Simulation</h1>
@@ -18,7 +19,6 @@
                     @strategy.Name
                 </option>
             }
-            <option value="all">All Strategies</option>
         </select>
 
         <label class="mt-3">Replication Count</label>
@@ -26,7 +26,17 @@
         <button class="btn btn-primary mt-3" @onclick="RunSimulation">
             Run Simulation
         </button>
+        <button class="btn btn-danger mt-3" @onclick="Stop">
+            Stop
+        </button>
     </div>
+
+    <RealTimeChart
+        @ref="_chart"
+        Title="Simulation"
+        XAxisLabel="Replication"
+        YAxisLabel="Jan's Costs"
+    />
 }
 else
 {
@@ -37,44 +47,43 @@ else
     private string _selectedStrategyName =
         MainApp.Instance.StrategiesHandler.Strategies[0]!.Name;
 
-    private int _replicationCount = 1000;
+    private MainSimulation? _simulation;
+    public IProgress<SimulationProgress<double>> Progress { get; }
+    private int _replicationCount = 100_000;
+    private RealTimeChart _chart = new();
 
-    private void RunSimulation()
+
+    public Simulation()
     {
-        if (_selectedStrategyName == "all")
+        Progress = new Progress<SimulationProgress<double>>(async void (progress) =>
         {
-            RunAllStrategies();
-            return;
-        }
+            if (await Config.ShouldBePrintedToGraph(progress.CurrentIteration, _replicationCount))
+            {
+                await _chart.AddValue(progress.Cumulative / progress.CurrentIteration);
+            }
+        });
+    }
 
+    private async Task RunSimulation()
+    {
         Strategy? strategyToRun = MainApp.Instance.StrategiesHandler
             .Strategies.First(s => s!.Name == _selectedStrategyName);
 
-        RunStrategy(strategyToRun!);
+        await RunStrategy(strategyToRun!);
+        Console.WriteLine("Done");
     }
 
-    private void RunStrategy(Strategy strategyToRun)
+    private async Task RunStrategy(Strategy strategyToRun)
     {
-        MainSimulation mainSimulationSimulation = new MainSimulation(strategyToRun);
-
-        Console.WriteLine($"Started Strategy: {strategyToRun.Name}");
-        Stopwatch watch = Stopwatch.StartNew();
-
-        double solution = mainSimulationSimulation.Run(_replicationCount);
-        watch.Stop();
-
-        Console.WriteLine(watch.Elapsed);
-        Console.WriteLine($"Final Cost: {solution}");
+        await _chart.Reset();
+        _simulation = new MainSimulation(strategyToRun);
+        double solution = await _simulation.RunCompleteSimulation(_replicationCount, Progress);
+        await _chart.AddValue(solution);
     }
 
-    private void RunAllStrategies()
+    private void Stop()
     {
-        foreach (Strategy? strategy in MainApp.Instance.StrategiesHandler.Strategies)
-        {
-            if (strategy != null)
-            {
-                RunStrategy(strategy);
-            }
-        }
+        _simulation?.RequestCancellation();
+        StateHasChanged();
     }
 }

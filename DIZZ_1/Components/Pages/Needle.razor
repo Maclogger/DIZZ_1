@@ -1,4 +1,5 @@
 @page "/Needle"
+@using DIZZ_1.BackEnd
 @using DIZZ_1.BackEnd.Needle
 @using DIZZ_1.BackEnd.Simulation
 @using DIZZ_1.Components.Chart
@@ -42,12 +43,11 @@
     {
         Progress = new Progress<SimulationProgress<int>>(async void (progress) =>
         {
-            if (progress.CurrentIteration % (_replicationCount / 1000) == 0)
+            if (await Config.ShouldBePrintedToGraph(progress.CurrentIteration, _replicationCount))
             {
                 _pi = _needleLength / (_diameter * ((double)progress.Cumulative / progress.CurrentIteration));
                 //Console.WriteLine($"{progress.CurrentIteration}: {progress.Cumulative} - {_pi}");
                 await _chart.AddValue(_pi.Value);
-                StateHasChanged();
             }
         });
     }

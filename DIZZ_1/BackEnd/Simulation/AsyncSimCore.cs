@@ -25,6 +25,8 @@ public abstract class AsyncSimCore<TIter, TProg>
         {
             TProg cumulative = initialValue;
             await BeforeSimulation();
+
+            Console.WriteLine($"Replication count: {replicationCount}");
             for (int replication = 1; replication <= replicationCount; replication++)
             {
                 await BeforeReplication(replication);
@@ -51,7 +53,6 @@ public abstract class AsyncSimCore<TIter, TProg>
         }, _cts.Token);
     }
 
-// Add a method to request cancellation
     public void RequestCancellation()
     {
         _cts?.Cancel();
@@ -60,8 +61,9 @@ public abstract class AsyncSimCore<TIter, TProg>
     protected virtual Task BeforeSimulation() => Task.CompletedTask;
     protected virtual Task BeforeReplication(int replication) => Task.CompletedTask;
     protected virtual Task AfterSimulation(TProg cumulative, int replication) => Task.CompletedTask;
-    protected virtual Task AfterReplication(TProg cumulative, int replication) => Task.CompletedTask;
 
-    protected abstract Task<TIter>
-        RunExperiment();
+    protected virtual Task AfterReplication(TProg cumulative, int replication) =>
+        Task.CompletedTask;
+
+    protected abstract Task<TIter> RunExperiment();
 }

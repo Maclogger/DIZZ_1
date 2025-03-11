@@ -3,7 +3,7 @@ using DIZZ_1.BackEnd.Strategies;
 
 namespace DIZZ_1.BackEnd.Simulation;
 
-public class MainSimulation : SimCore
+public class MainSimulation : AsyncSimCore<double, double>
 {
     public Strategy? Strategy { get; }
     public MainGenerators MainGenerators { get; set; }
@@ -17,25 +17,28 @@ public class MainSimulation : SimCore
         Warehouse = new Warehouse();
     }
 
-    protected override void BeforeSimulation()
-    {
-    }
-
-    protected override void BeforeReplication()
+    protected override Task BeforeReplication(int replication)
     {
         Warehouse.Reset();
         Cost = 0;
+        return base.BeforeReplication(replication);
     }
 
-    protected override void AfterReplication(double solution)
+    public async Task<double> RunCompleteSimulation(
+        int replicationCount,
+        IProgress<SimulationProgress<double>> progress
+    )
     {
+        (double cumulative, int doneReplications) = await Run(
+            replicationCount,
+            (total, currentCost) => total + currentCost,
+            0.0,
+            progress
+        );
+        return cumulative / doneReplications;
     }
 
-    protected override void AfterSimulation(double solution)
-    {
-    }
-
-    protected override double RunExperiment()
+    protected override Task<double> RunExperiment()
     {
         for (int week = 1; week <= 30; week++)
         {
@@ -46,10 +49,11 @@ public class MainSimulation : SimCore
             if (Config.PrintCompleteReplication) Console.WriteLine("After Output:");
             if (Config.PrintCompleteReplication) Console.WriteLine(Warehouse);
             CalculateStorageCost(3); // Friday -> Sunday
-            if (Config.PrintCompleteReplication) Console.WriteLine("---------------------------------");
+            if (Config.PrintCompleteReplication)
+                Console.WriteLine("---------------------------------");
         }
 
-        return Cost;
+        return Task.FromResult(Cost);
     }
 
     private void HandleOutput()
@@ -110,7 +114,7 @@ public class MainSimulation : SimCore
 
     private Generator<double> GetSupplierGenerator(int week)
     {
-        int currentSupplier = Strategy.Weeks[week].Supplier;
+        int currentSupplier = Strategy!.Weeks[week].Supplier;
         if (currentSupplier == 1)
         {
             if (week <= 10)
