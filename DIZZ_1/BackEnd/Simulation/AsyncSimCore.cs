@@ -10,51 +10,58 @@ public class SimulationProgress<TProg>
 
 public abstract class AsyncSimCore<TIter, TProg>
 {
-    public async Task<TProg> Run(
+    private CancellationTokenSource? _cts;
+
+    public async Task<(TProg, int)> Run(
         int replicationCount,
         Func<TProg, TIter, TProg> aggregator,
         TProg initialValue,
-        IProgress<SimulationProgress<TProg>> progress,
-        CancellationToken cancellationToken = default
+        IProgress<SimulationProgress<TProg>> progress
     )
     {
+        _cts = new CancellationTokenSource();
+
         return await Task.Run(async () =>
         {
             TProg cumulative = initialValue;
             await BeforeSimulation();
-            try
+            for (int replication = 1; replication <= replicationCount; replication++)
             {
-                for (int replication = 1; replication <= replicationCount; replication++)
+                await BeforeReplication(replication);
+                TIter experimentResult = await RunExperiment();
+                cumulative = aggregator(cumulative, experimentResult);
+
+                progress.Report(new SimulationProgress<TProg>
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    CurrentIteration = replication,
+                    Cumulative = cumulative,
+                });
 
-                    await BeforeReplication(replication);
-                    TIter experimentResult = await RunExperiment();
-                    cumulative = aggregator(cumulative, experimentResult);
+                await AfterReplication(cumulative, replication);
 
-                    progress.Report(new SimulationProgress<TProg>
-                    {
-                        CurrentIteration = replication,
-                        Cumulative = cumulative,
-                    });
-
-                    await AfterReplication(cumulative);
+                if (_cts.IsCancellationRequested)
+                {
+                    await AfterSimulation(cumulative, replication);
+                    return (cumulative, replication);
                 }
             }
-            catch (OperationCanceledException e)
-            {
-                await AfterSimulation(cumulative);
-                return cumulative;
-            }
 
-            await AfterSimulation(cumulative);
-            return cumulative;
-        });
+            await AfterSimulation(cumulative, replicationCount);
+            return (cumulative, replicationCount);
+        }, _cts.Token);
+    }
+
+// Add a method to request cancellation
+    public void RequestCancellation()
+    {
+        _cts?.Cancel();
     }
 
     protected virtual Task BeforeSimulation() => Task.CompletedTask;
     protected virtual Task BeforeReplication(int replication) => Task.CompletedTask;
-    protected virtual Task AfterSimulation(TProg cumulative) => Task.CompletedTask;
-    protected virtual Task AfterReplication(TProg cumulative) => Task.CompletedTask;
-    protected abstract Task<TIter> RunExperiment();
+    protected virtual Task AfterSimulation(TProg cumulative, int replication) => Task.CompletedTask;
+    protected virtual Task AfterReplication(TProg cumulative, int replication) => Task.CompletedTask;
+
+    protected abstract Task<TIter>
+        RunExperiment();
 }

@@ -10,8 +10,6 @@ namespace DIZZ_1.BackEnd.Needle
         private readonly double _d;
         private readonly double _l;
 
-        public CancellationTokenSource Cts { get; } = new();
-
         public BuffonNeedle(double pD, double pL)
         {
             _d = pD;
@@ -20,17 +18,18 @@ namespace DIZZ_1.BackEnd.Needle
             _randomY = UniformGeneratorFactory.CreateRealUniformGenerator(0.0, 1.0);
         }
 
-        public async Task<double> RunCompleteSimulation(int replicationCount,
-            IProgress<SimulationProgress<int>> progress)
+        public async Task<double> RunCompleteSimulation(
+            int replicationCount,
+            IProgress<SimulationProgress<int>> progress
+        )
         {
-            int cumulative = await Run(
+            (int cumulative, int doneReplications) = await Run(
                 replicationCount,
                 (total, wasInCircle) => total + (wasInCircle ? 1 : 0),
                 0,
-                progress,
-                Cts.Token
+                progress
             );
-            return CalculatePi(cumulative, replicationCount);
+            return CalculatePi(cumulative, doneReplications);
         }
 
         private double CalculatePi(int cumulative, int replicationCount)
@@ -48,6 +47,11 @@ namespace DIZZ_1.BackEnd.Needle
             double a = _l * Math.Cos(alfaRadians);
 
             return Task.FromResult(y + a >= _d);
+        }
+
+        public void Stop()
+        {
+            RequestCancellation();
         }
     }
 }

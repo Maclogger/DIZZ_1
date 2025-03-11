@@ -31,7 +31,7 @@
 
 @code {
     private double? _pi = null;
-    private int _replicationCount = 10;
+    private int _replicationCount = 1000000;
     private double _needleLength = 5;
     private double _diameter = 10;
     private bool _isStopped = true;
@@ -53,23 +53,22 @@
     }
 
     public IProgress<SimulationProgress<int>> Progress { get; }
-    private CancellationTokenSource Cts { get; set; }
+    private BuffonNeedle _needle;
 
     public async Task Run()
     {
         _isStopped = false;
         await _chart.Reset();
-        BuffonNeedle needle = new BuffonNeedle(_diameter, _needleLength);
-        Cts = needle.Cts;
-        _pi = await needle.RunCompleteSimulation(_replicationCount, Progress);
+        _needle = new BuffonNeedle(_diameter, _needleLength);
+        _pi = await _needle.RunCompleteSimulation(_replicationCount, Progress);
         _isStopped = true;
         StateHasChanged();
     }
 
     private void Stop()
     {
-        Console.WriteLine("LOL");
-        Cts.Cancel();
+        Console.WriteLine("Stop please.");
+        _needle.Stop();
     }
 
 }
