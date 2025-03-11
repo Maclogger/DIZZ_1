@@ -40,6 +40,11 @@ public abstract class AsyncSimCore<TIter, TProg>
                 });
                 await AfterReplication(cumulative, replication);
 
+                if (await MainApp.Instance.Config.ShouldBePrintedToGraph(replication, replicationCount))
+                {
+                    await Task.Delay(MainApp.Instance.Config.GetSpeedDelay(), _cts.Token);
+                }
+
                 if (_cts.IsCancellationRequested)
                 {
                     await AfterSimulation(cumulative, replication);

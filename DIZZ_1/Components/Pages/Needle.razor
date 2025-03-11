@@ -43,9 +43,14 @@
     {
         Progress = new Progress<SimulationProgress<int>>(async void (progress) =>
         {
-            if (await Config.ShouldBePrintedToGraph(progress.CurrentIteration, _replicationCount))
+            _pi = _needleLength / (_diameter * ((double)progress.Cumulative / progress.CurrentIteration));
+            await InvokeAsync(() =>
             {
-                _pi = _needleLength / (_diameter * ((double)progress.Cumulative / progress.CurrentIteration));
+                StateHasChanged();
+                return Task.CompletedTask;
+            });
+            if (await MainApp.Instance.Config.ShouldBePrintedToGraph(progress.CurrentIteration, _replicationCount))
+            {
                 await _chart.AddValue(_pi.Value);
                 await Task.Delay(100);
             }

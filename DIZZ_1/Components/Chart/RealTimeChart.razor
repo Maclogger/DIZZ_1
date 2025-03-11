@@ -1,3 +1,4 @@
+@using System.Runtime.InteropServices.JavaScript
 @using Microsoft.JSInterop
 @inject IJSRuntime JsRuntime
 
@@ -37,10 +38,14 @@
     {
         if (_module is not null)
         {
-            /*
-            Console.WriteLine($"Adding data point: {value:F2}");
-            */
-            await _module.InvokeVoidAsync("addDataPoint", _canvasId, value);
+            try
+            {
+                await _module.InvokeVoidAsync("addDataPoint", _canvasId, value);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
         }
     }
 

@@ -29,6 +29,34 @@
         <button class="btn btn-danger mt-3" @onclick="Stop">
             Stop
         </button>
+
+        <div class="form-group mt-3">
+            <label>Speed Control</label>
+            <div class="btn-group btn-group-toggle d-block" data-toggle="buttons">
+                <label class="btn btn-outline-primary @(_speed == 0 ? "active" : "")">
+                    <input type="radio"
+                           name="speedOptions"
+                           value="0"
+                           @onclick="() => ChangeSpeed(0)"/> Slow
+                </label>
+                <label class="btn btn-outline-primary @(_speed == 1 ? "active" : "")">
+                    <input type="radio"
+                           name="speedOptions"
+                           value="1"
+                           @onclick="() => ChangeSpeed(1)"/> Normal
+                </label>
+                <label class="btn btn-outline-primary @(_speed == 2 ? "active" : "")">
+                    <input type="radio"
+                           name="speedOptions"
+                           value="2"
+                           @onclick="() => ChangeSpeed(2)"/> Full Speed
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-dark-subtle p-3 mt-4 w-25">
+        <h5 class="p-0 m-0">Jan's Cost: @_bestCost</h5>
     </div>
 
     <RealTimeChart
@@ -44,6 +72,7 @@ else
 }
 
 @code {
+
     private string _selectedStrategyName =
         MainApp.Instance.StrategiesHandler.Strategies[0]!.Name;
 
@@ -51,21 +80,30 @@ else
     public IProgress<SimulationProgress<double>> Progress { get; }
     private int _replicationCount = 100_000;
     private RealTimeChart _chart = new();
-
+    private double _bestCost = 0.0;
+    private int _speed = 2;
 
     public Simulation()
     {
         Progress = new Progress<SimulationProgress<double>>(async void (progress) =>
         {
-            if (await Config.ShouldBePrintedToGraph(progress.CurrentIteration, _replicationCount))
+            _bestCost = progress.Cumulative / progress.CurrentIteration;
+            await InvokeAsync(() =>
             {
-                await _chart.AddValue(progress.Cumulative / progress.CurrentIteration);
+                StateHasChanged();
+                return Task.CompletedTask;
+            });
+            if (await MainApp.Instance.Config.ShouldBePrintedToGraph(progress.CurrentIteration, _replicationCount))
+            {
+                await _chart.AddValue(_bestCost);
+                StateHasChanged();
             }
         });
     }
 
     private async Task RunSimulation()
     {
+        MainApp.Instance.Config.SetSpeed(_speed);
         Strategy? strategyToRun = MainApp.Instance.StrategiesHandler
             .Strategies.First(s => s!.Name == _selectedStrategyName);
 
@@ -86,4 +124,12 @@ else
         _simulation?.RequestCancellation();
         StateHasChanged();
     }
+
+    private void ChangeSpeed(int newSpeed)
+    {
+        _speed = newSpeed;
+        Console.WriteLine($"Nova speed: {_speed}");
+        MainApp.Instance.Config.SetSpeed(_speed);
+    }
+
 }

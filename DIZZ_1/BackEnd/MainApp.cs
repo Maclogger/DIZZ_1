@@ -16,11 +16,14 @@ namespace DIZZ_1.BackEnd
             MasterSeeder = new Random(0);
             Generators.InitializeAll();
             StrategiesHandler = new();
+            Config = new();
         }
 
         public Random MasterSeeder { get; set; }
         public Generators.Generators Generators { get; private set; }
 
         public StrategiesHandler StrategiesHandler { get; set; }
+
+        public Config Config { get; set; }
     }
 }

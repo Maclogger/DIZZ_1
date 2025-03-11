@@ -52,19 +52,23 @@ export function initializeChart(canvasId, config) {
 
 let pendingUpdate = false;
 
-export function addDataPoint(canvasId, value) {
-    if (!(canvasId in charts)) return;
-    const chart = charts[canvasId];
-    const newIndex = chart.data.datasets[0].data.length;
-    chart.data.datasets[0].data.push({x: newIndex, y: value});
+export async function addDataPoint(canvasId, value) {
+    try {
+        return new Promise((resolve, reject) => {
+            if (!(canvasId in charts)) return;
+            const chart = charts[canvasId];
+            const newIndex = chart.data.datasets[0].data.length;
+            chart.data.datasets[0].data.push({x: newIndex, y: value});
 
-    if (!pendingUpdate) {
-        pendingUpdate = true;
-        requestAnimationFrame(() => {
-            chart.update("none");
-            pendingUpdate = false;
-        });
-    }
+            if (!pendingUpdate) {
+                pendingUpdate = true;
+                requestAnimationFrame(() => {
+                    chart.update("none");
+                    pendingUpdate = false;
+                });
+            }
+        })
+    } catch (error) {}
 }
 
 export function reset(canvasId) {
