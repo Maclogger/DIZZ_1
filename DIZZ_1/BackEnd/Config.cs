@@ -4,7 +4,7 @@ public static class Config
 {
     public const int MaxPrintValuesInTextArea = 1000;
 
-    private const int PointsInGraph = 5_000;
+    private const int PointsInGraph = 10_000;
     private const double PercentToCutFromBeggingOfTheChart = 5;
     public const string FloatFormat = "F2";
     public const double Tolerance = 0.00001;
@@ -19,11 +19,6 @@ public static class Config
         int startPrintIndex = (int)(replicationCount * (PercentToCutFromBeggingOfTheChart / 100.0));
 
         int nthPoint = GetNthPointToDraw(replicationCount);
-
-        /*
-        Console.WriteLine(
-            $"NthPoint: {nthPoint}, startPrintIndex: {startPrintIndex}, replicationCount: {replicationCount}");
-        */
         return Task.FromResult(currentReplication >= startPrintIndex &&
                                currentReplication % nthPoint == 0);
     }

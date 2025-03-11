@@ -38,7 +38,6 @@ public abstract class AsyncSimCore<TIter, TProg>
                     CurrentIteration = replication,
                     Cumulative = cumulative,
                 });
-
                 await AfterReplication(cumulative, replication);
 
                 if (_cts.IsCancellationRequested)

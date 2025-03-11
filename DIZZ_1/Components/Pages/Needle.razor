@@ -46,8 +46,8 @@
             if (await Config.ShouldBePrintedToGraph(progress.CurrentIteration, _replicationCount))
             {
                 _pi = _needleLength / (_diameter * ((double)progress.Cumulative / progress.CurrentIteration));
-                //Console.WriteLine($"{progress.CurrentIteration}: {progress.Cumulative} - {_pi}");
                 await _chart.AddValue(_pi.Value);
+                await Task.Delay(100);
             }
         });
     }
