@@ -3,6 +3,7 @@
 @using DIZZ_1.BackEnd.Needle
 @using DIZZ_1.BackEnd.Simulation
 @using DIZZ_1.Components.Chart
+@using DIZZ_1.Components.Basic
 @rendermode InteractiveServer
 <h1>Buffon's Needle</h1>
 <div class="d-flex flex-column card bg-dark p-4 mb-3 text-white" style="width: 25rem;">
@@ -17,6 +18,8 @@
 
     <button class="btn btn-primary mt-3" @onclick="Run">Run</button>
     <button class="btn btn-danger mt-3 mb-1" @onclick="Stop" disabled="@_isStopped">Stop</button>
+
+    <SpeedControl />
 </div>
 
 

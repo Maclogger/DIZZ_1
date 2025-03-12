@@ -1,0 +1,33 @@
+@using DIZZ_1.BackEnd
+<div class="form-group mt-3">
+    <label>Speed Control</label>
+    <div class="btn-group btn-group-toggle d-block" data-toggle="buttons">
+        <label class="btn btn-outline-primary @(Speed == 0 ? "active" : "")">
+            <input type="radio"
+                   name="speedOptions"
+                   value="0"
+                   @onclick="() => ChangeSpeed(0)"/> Slow
+        </label>
+        <label class="btn btn-outline-primary @(Speed == 1 ? "active" : "")">
+            <input type="radio"
+                   name="speedOptions"
+                   value="1"
+                   @onclick="() => ChangeSpeed(1)"/> Normal
+        </label>
+        <label class="btn btn-outline-primary @(Speed == 2 ? "active" : "")">
+            <input type="radio"
+                   name="speedOptions"
+                   value="2"
+                   @onclick="() => ChangeSpeed(2)"/> Full Speed
+        </label>
+    </div>
+</div>
+@code {
+    public int Speed { get; set; } = 2;
+
+    public void ChangeSpeed(int newSpeed)
+    {
+        Speed = newSpeed;
+        MainApp.Instance.Config.SetSpeed(newSpeed);
+    }
+}

@@ -24,7 +24,7 @@ public class Config
     }
 
 
-    private int _speed = 1; // 0 = SLOW, 1 = NORMAL, 2 = MAX_SPEED
+    private int _speed = 2; // 0 = SLOW, 1 = NORMAL, 2 = MAX_SPEED
 
     public int GetSpeedDelay()
     {

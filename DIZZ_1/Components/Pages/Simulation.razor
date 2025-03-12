@@ -4,6 +4,7 @@
 @using DIZZ_1.BackEnd.Simulation
 @using DIZZ_1.BackEnd.Strategies
 @using DIZZ_1.Components.Chart
+@using DIZZ_1.Components.Basic
 @rendermode InteractiveServer
 
 <h1>Simulation</h1>
@@ -30,29 +31,8 @@
             Stop
         </button>
 
-        <div class="form-group mt-3">
-            <label>Speed Control</label>
-            <div class="btn-group btn-group-toggle d-block" data-toggle="buttons">
-                <label class="btn btn-outline-primary @(_speed == 0 ? "active" : "")">
-                    <input type="radio"
-                           name="speedOptions"
-                           value="0"
-                           @onclick="() => ChangeSpeed(0)"/> Slow
-                </label>
-                <label class="btn btn-outline-primary @(_speed == 1 ? "active" : "")">
-                    <input type="radio"
-                           name="speedOptions"
-                           value="1"
-                           @onclick="() => ChangeSpeed(1)"/> Normal
-                </label>
-                <label class="btn btn-outline-primary @(_speed == 2 ? "active" : "")">
-                    <input type="radio"
-                           name="speedOptions"
-                           value="2"
-                           @onclick="() => ChangeSpeed(2)"/> Full Speed
-                </label>
-            </div>
-        </div>
+        <SpeedControl />
+
     </div>
 
     <div class="card bg-dark-subtle p-3 mt-4 w-25">
@@ -81,7 +61,6 @@ else
     private int _replicationCount = 100_000;
     private RealTimeChart _chart = new();
     private double _bestCost = 0.0;
-    private int _speed = 2;
 
     public Simulation()
     {
@@ -103,7 +82,6 @@ else
 
     private async Task RunSimulation()
     {
-        MainApp.Instance.Config.SetSpeed(_speed);
         Strategy? strategyToRun = MainApp.Instance.StrategiesHandler
             .Strategies.First(s => s!.Name == _selectedStrategyName);
 
@@ -123,12 +101,5 @@ else
     {
         _simulation?.RequestCancellation();
         StateHasChanged();
-    }
-
-    private void ChangeSpeed(int newSpeed)
-    {
-        _speed = newSpeed;
-        Console.WriteLine($"Nova speed: {_speed}");
-        MainApp.Instance.Config.SetSpeed(_speed);
     }
 }
