@@ -40,7 +40,7 @@ public class MainSimulation : AsyncSimCore<double, double>
 
     protected override Task<double> RunExperiment(int replication)
     {
-        List<double>? dailyCosts = (replication <= 1 ? new() : null);
+        List<double>? firstRepCumulativeCosts = (replication <= 1 ? new() : null);
         for (int week = 1; week <= 30; week++)
         {
             if (Config.PrintCompleteReplication) Console.WriteLine($"Week: {week} / 30");
@@ -48,11 +48,22 @@ public class MainSimulation : AsyncSimCore<double, double>
             double storageCost = CalculateStorageCost(4);
             if (replication <= 1)
             {
-                dailyCosts!.Add(storageCost / 4); // PON
-                dailyCosts.Add(storageCost / 4); // UTO
-                dailyCosts.Add(storageCost / 4); // STR
-                dailyCosts.Add(storageCost / 4); // ŠTV
+                if (week == 1)
+                {
+                    firstRepCumulativeCosts!.Add(storageCost / 4); // PON
+                }
+                else
+                {
+                    firstRepCumulativeCosts!.Add(firstRepCumulativeCosts[^1] +
+                                                 (storageCost / 4)); // PON
+                }
+
+                firstRepCumulativeCosts.Add(firstRepCumulativeCosts[^1] + (storageCost / 4)); // UTO
+                firstRepCumulativeCosts.Add(firstRepCumulativeCosts[^1] +
+                                            (storageCost / 4)); // STR
+                firstRepCumulativeCosts.Add(firstRepCumulativeCosts[^1] + (storageCost / 4)); // ŠTV
             }
+
             Cost += storageCost;
             double fine = HandleOutput(); // Friday
             Cost += fine;
@@ -61,10 +72,12 @@ public class MainSimulation : AsyncSimCore<double, double>
             storageCost = CalculateStorageCost(3); // Friday -> Sunday
             if (replication <= 1)
             {
-                dailyCosts!.Add(storageCost / 3 + fine); // PIA
-                dailyCosts.Add(storageCost / 3); // SOB
-                dailyCosts.Add(storageCost / 3); // NED
+                firstRepCumulativeCosts!.Add(
+                    firstRepCumulativeCosts[^1] + (storageCost / 3) + fine); // PIA
+                firstRepCumulativeCosts.Add(firstRepCumulativeCosts[^1] + (storageCost / 3)); // SOB
+                firstRepCumulativeCosts.Add(firstRepCumulativeCosts[^1] + (storageCost / 3)); // NED
             }
+
             Cost += storageCost;
             if (Config.PrintCompleteReplication)
                 Console.WriteLine("---------------------------------");
@@ -72,7 +85,7 @@ public class MainSimulation : AsyncSimCore<double, double>
 
         if (replication <= 1)
         {
-            MainApp.Instance.DailyCosts = dailyCosts!;
+            MainApp.Instance.CumulativeCosts = firstRepCumulativeCosts!;
         }
 
         return Task.FromResult(Cost);
@@ -107,8 +120,10 @@ public class MainSimulation : AsyncSimCore<double, double>
 
     private double CalculateStorageCost(int countOfDays)
     {
-        double storageCost = Warehouse.AbsorbersCount * Config.AbsorbersDailyStorageCostPerUnit * countOfDays;
-        storageCost += Warehouse.BrakePadsCount * Config.BrakePadsDailyStorageCostPerUnit * countOfDays;
+        double storageCost = Warehouse.AbsorbersCount * Config.AbsorbersDailyStorageCostPerUnit *
+                             countOfDays;
+        storageCost += Warehouse.BrakePadsCount * Config.BrakePadsDailyStorageCostPerUnit *
+                       countOfDays;
         storageCost += Warehouse.LightsCount * Config.LightsDailyStorageCostPerUnit * countOfDays;
         if (Config.PrintCompleteReplication) Console.WriteLine($"storageCost: {storageCost}");
         return storageCost;
